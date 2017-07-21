@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div class="page-header">
+	<h1>NAMI Data Chart</h1>
+</div id="chart" style="width:350px;float: left">
+<div>
+	<embed type="image/svg+xml" src = {{ chart.render_data_uri()|safe }}>
+
+</div>
+
+{% endblock %}
