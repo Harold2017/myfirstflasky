@@ -47,4 +47,7 @@ def create_app(config_name):
     from .chart import chart as chart_blueprint
     app.register_blueprint(chart_blueprint, url_prefix='/chart')
 
+    from .cri import cri as cri_blueprint
+    app.register_blueprint(cri_blueprint, url_prefix='/cri')
+
     return app

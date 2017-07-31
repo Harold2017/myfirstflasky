@@ -25,3 +25,5 @@ python-editor==1.0.3
 six==1.4.1
 Flask-GoogleMaps==0.2.4
 pyecharts==0.1.9
+pandas==0.20.3
+
