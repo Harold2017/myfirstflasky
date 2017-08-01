@@ -17,9 +17,9 @@ class Config:
     FLASKY_POSTS_PER_PAGE = 20
     FLASKY_FOLLOWERS_PER_PAGE = 50
     FLASKY_COMMENTS_PER_PAGE = 30
-    UPLOAD_FOLDER = '/path/to/the/uploads'
-    ALLOWED_EXTENSIONS = set(['csv', 'txt', 'png', 'jpg', 'jpeg'])
-    MAX_CONTENT_LENGTH = 1 * 1024 * 1024
+    #UPLOAD_FOLDER = basedir + '/uploads'
+    #ALLOWED_EXTENSIONS = set(['csv', 'txt', 'png', 'jpg', 'jpeg'])
+    #MAX_CONTENT_LENGTH = 1 * 1024 * 1024
 
     @staticmethod
     def init_app(app):

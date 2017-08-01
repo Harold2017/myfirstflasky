@@ -1,16 +1,17 @@
-from flask import render_template, flash, request, current_app
+from flask import render_template, flash, request, current_app, redirect, url_for
 from flask_login import login_required, current_user
 from ..models import User_files
+from .. import db
 from . import cri
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from pyecharts import Line
 import os
 import pandas as pd
 
 
-upload_folder = current_app.config['UPLOAD_FOLDER ']
-max_file_length = current_app.config['MAX_CONTENT_LENGTH']
-extensions = current_app.config['ALLOWED_EXTENSIONS']
+upload_folder = os.path.abspath("app") + "\\uploads"
+max_file_length = 1 * 1024 * 1024
+extensions = set(['csv', 'txt', 'png', 'jpg', 'jpeg'])
 
 
 def allowed_file(filename):
@@ -25,46 +26,72 @@ def allowed_file(filename):
 #            return 'Unsupported Media Type', 415
 
 
-@cri.route('/v1.0/getfile', methods=['GET', 'POST'])
-#@login_required
+@cri.route('/v1.0')
+@login_required
+def upload():
+    return render_template('upload.html')
+
+
+@cri.route('/v1.0/upload', methods=['GET', 'POST'])
+@login_required
 def upload_spectrum():
     if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
 
-        file = request.files['myfile']
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(upload_folder, filename)
-
-        file.save(file_path)
-        current_user.user_files = file_path
-        db.session.add(current_user)
-        db.session.commit()
-
-        with open(file_path) as f:
-            file_content = f.read()
-
-        return file_content
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(upload_folder, filename)
+            file.save(file_path)
+            user_file = User_files(author_id=current_user.id)
+            user_file.file_path = file_path
+            db.session.add(user_file)
+            db.session.commit()
+            flash("Your spectrum has been uploaded!")
+            return redirect(url_for('cri.cri_chart'))
     else:
-        result = request.args.get['myfile']
-    return result
+        pass
+        return "Please choose one file to upload!"
+        #result = request.args.get['file']
+        #return result
 
 
-@cri.route('/v1.0')
+@cri.route('/v1.0/chart')
+@login_required
 def cri_chart():
     author_id = current_user.id
-    file_path = User_files.query.filter_by(author_id=author_id).all()
+    user_file = User_files.query.filter_by(author_id=author_id).first()
+    file_path = user_file.file_path
+    if file_path is None:
+        flash('No Spectrum is uploaded!')
+        return render_template('404.html'), 404
     with open(file_path) as f:
-        data = pd.read_csv(f, sep=" ", header=None)
+        data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+        #data = f.readlines()
+        f.close()
 
     if len(data) is 0:
-        flash('No spectrum is uploaded!')
+        flash('No data is uploaded!')
 
-    line = Line(title="CRI", width=800, height=400)
+    line = Line(title="Spectrum", width=800, height=400)
 
-    attr = data.ix[:, [0]]
-    d = data.ix[:, [1]]
-    line.add("Spectrum", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
+    attr = line.pdcast(data.ix[:, [0]])
+    d = line.pdcast(data.ix[:, [1]])
+    x = []
+    y = []
+    for i in d[0]:
+        y.extend(i)
+    for i in attr[0]:
+        x.extend(i)
+    line.add("Spectrum", x, y, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
              mark_point=["min", "max"])
-    line.render(r"../templates/cri_render.html")
+    path = os.path.abspath("app/templates") + "\\cri_render.html"
+    line.render(path)
 
     return render_template('cri_chart.html')
 

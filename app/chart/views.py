@@ -5,6 +5,8 @@ from . import chart
 from pytz import timezone
 #import pygal
 from pyecharts import Line
+import os
+
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
@@ -32,7 +34,8 @@ def chart():
 	d = data
 	line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line = ["average"],
 			 mark_point = ["min", "max"])
-	line.render(r"/home/pi/myproject/flasky/app/templates/render.html")
+	path = os.path.abspath("app/templates") + "\\render.html"
+	line.render(path )
 
 
 	return render_template('echart.html')
