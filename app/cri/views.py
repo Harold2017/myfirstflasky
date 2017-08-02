@@ -7,10 +7,11 @@ from werkzeug.utils import secure_filename
 from pyecharts import Line
 import os
 import pandas as pd
+#import math
+#import numpy as np
 
 
 upload_folder = os.path.abspath("app") + "\\uploads"
-max_file_length = 1 * 1024 * 1024
 extensions = set(['csv', 'txt', 'png', 'jpg', 'jpeg'])
 
 
@@ -94,4 +95,9 @@ def cri_chart():
     line.render(path)
 
     return render_template('cri_chart.html')
+
+
+
+
+
 
