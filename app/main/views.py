@@ -5,8 +5,11 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
 from .. import db
+from ..models import User_files
 from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
+from werkzeug.utils import secure_filename
+import os
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -37,12 +40,14 @@ def index():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    photo = User_files.query.filter_by(author_id=user.id).order_by(User_files.id.desc()).first_or_404()
+    filename = os.path.basename(photo.file_path)
     page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    return render_template('user.html', user=user, posts=posts,
+    return render_template('user.html', user=user, filename=filename, posts=posts,
                            pagination=pagination)
 
 
@@ -54,6 +59,15 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        if form.photo.data:
+            f = form.photo.data
+            filename = secure_filename(f.filename)
+            file_path = os.path.join(
+                os.path.abspath("app/static"), filename)
+            f.save(file_path)
+            user_file = User_files(author_id=current_user.id)
+            user_file.file_path = file_path
+            db.session.add(user_file)
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))

@@ -7,12 +7,13 @@ from pytz import timezone
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
 
+
 @api.route('/v1.0/<token>', methods=['GET'])
 def verify_token_get1(token):
     if token is None:
         return "No valid Token", 404
-    user = User.query.filter_by(api_hash = token).first()
-    api = Api.query.filter_by(author_id = user.id).order_by(Api.id.desc()).first()
+    user = User.query.filter_by(api_hash=token).first()
+    api = Api.query.filter_by(author_id=user.id).order_by(Api.id.desc()).first()
     t = api.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S')
     v = api.value
     return jsonify(t, v), 201
@@ -22,19 +23,20 @@ def verify_token_get1(token):
 def verify_token_get(token, option):
     if token is None:
         return "No Valid Token", 404
-    user = User.query.filter_by(api_hash = token).first()
+    user = User.query.filter_by(api_hash=token).first()
     if option == 'all':
-        api = Api.query.filter_by(author_id = user.id).all()
+        api = Api.query.filter_by(author_id=user.id).all()
     else:
-        api = Api.query.filter_by(author_id = user.id).order_by(Api.id.desc()).limit(option).all()
+        api = Api.query.filter_by(author_id=user.id).order_by(Api.id.desc()).limit(option).all()
     t = []
     v = []
     data = {}
     for i in api:
         t.append(i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S'))
         v.append(i.value)
-    data = dict(zip(t,v))
+    data = dict(zip(t, v))
     return jsonify(data), 201
+
 
 @api.route('/v1.0/<token>', methods=['POST'])
 def verify_token_post(token):
@@ -55,6 +57,7 @@ def verify_token_post(token):
     db.session.add(api_n)
     db.session.commit()
     return "Uploaded", 201
+
 
 @api.route('/v1.0/gps/<token>', methods=['POST'])
 def verify_gps_post(token):
