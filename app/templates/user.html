@@ -5,8 +5,8 @@
 
 {% block page_content %}
 <div class="page-header">
-    {% if user.user_files %}
-    <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename=filename) }}" height="256" width="256">
+    {% if filename %}
+    <img class="img-rounded profile-thumbnail" src="{{ url_for('static', filename='images/'+filename) }}" height="256" width="256">
     <p>{{ file_path }}</p>
     {% else %}
     <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">

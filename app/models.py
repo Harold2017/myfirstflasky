@@ -89,6 +89,7 @@ class User(UserMixin, db.Model):
     api_hash = db.Column(db.String(128), index=True)
     api_gps = db.relationship('Api_gps', backref='author', lazy='dynamic')
     user_files = db.relationship('User_files', backref='author', lazy='dynamic')
+    user_photos = db.relationship('User_photos', backref='author', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -341,6 +342,14 @@ class Api_gps(db.Model):
 
 class User_files(db.Model):
     __tablename__ = 'user_files'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    file_path = db.Column(db.String(128))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class User_photos(db.Model):
+    __tablename__ = 'user_photos'
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
     file_path = db.Column(db.String(128))

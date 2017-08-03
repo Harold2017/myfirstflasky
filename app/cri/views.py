@@ -30,7 +30,8 @@ def allowed_file(filename):
 @cri.route('/v1.0')
 @login_required
 def upload():
-    return render_template('upload.html')
+    user_file = User_files(author_id=current_user.id)
+    return render_template('upload.html', user_file=user_file)
 
 
 @cri.route('/v1.0/upload', methods=['GET', 'POST'])
@@ -66,7 +67,7 @@ def upload_spectrum():
 @login_required
 def cri_chart():
     author_id = current_user.id
-    user_file = User_files.query.filter_by(author_id=author_id).first()
+    user_file = User_files.query.filter_by(author_id=author_id).order_by(User_files.id.desc()).first()
     file_path = user_file.file_path
     if file_path is None:
         flash('No Spectrum is uploaded!')

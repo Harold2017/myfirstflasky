@@ -5,7 +5,7 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm
 from .. import db
-from ..models import User_files
+from ..models import User_photos
 from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
 from werkzeug.utils import secure_filename
@@ -40,8 +40,11 @@ def index():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    photo = User_files.query.filter_by(author_id=user.id).order_by(User_files.id.desc()).first_or_404()
-    filename = os.path.basename(photo.file_path)
+    if User_photos.query.filter_by(author_id=user.id).first():
+        photo = User_photos.query.filter_by(author_id=user.id).order_by(User_photos.id.desc()).first()
+        filename = os.path.basename(photo.file_path)
+    else:
+        filename = None
     page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
@@ -63,11 +66,11 @@ def edit_profile():
             f = form.photo.data
             filename = secure_filename(f.filename)
             file_path = os.path.join(
-                os.path.abspath("app/static"), filename)
+                os.path.abspath("app/static/images"), filename)
             f.save(file_path)
-            user_file = User_files(author_id=current_user.id)
-            user_file.file_path = file_path
-            db.session.add(user_file)
+            user_photo = User_photos(author_id=current_user.id)
+            user_photo.file_path = file_path
+            db.session.add(user_photo)
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
