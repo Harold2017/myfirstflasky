@@ -11,19 +11,20 @@ utc = timezone('UTC')
 @api.route('/v1.0/<token>', methods=['GET'])
 def verify_token_get1(token):
     if token is None:
-        return "No valid Token", 404
+        return "No valid Token", 401
     user = User.query.filter_by(api_hash=token).first()
-    api = Api.query.filter_by(author_id=user.id).order_by(Api.id.desc()).first()
+    api = Api.query.filter_by(author_id=user.id).order_by(Api.id.desc()).first_or_404()
     t = api.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S')
     v = api.value
-    return jsonify(t, v), 201
+    return jsonify(t, v), 200
 
 
 @api.route('/v1.0/<token>/<option>', methods=['GET'])
 def verify_token_get(token, option):
     if token is None:
-        return "No Valid Token", 404
+        return "No Valid Token", 401
     user = User.query.filter_by(api_hash=token).first()
+    api = Api.query.filter_by(author_id=user.id).first_or_404()
     if option == 'all':
         api = Api.query.filter_by(author_id=user.id).all()
     else:
@@ -35,16 +36,16 @@ def verify_token_get(token, option):
         t.append(i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S'))
         v.append(i.value)
     data = dict(zip(t, v))
-    return jsonify(data), 201
+    return jsonify(data), 200
 
 
 @api.route('/v1.0/<token>', methods=['POST'])
 def verify_token_post(token):
     if token is None:
-        return "No Valid Token", 404
+        return "No Valid Token", 401
     r = request.get_json(force=True)
     if r is None:
-        return "No Data Posted", 405
+        return "No Data Posted", 400
     timestamp = r['timestamp']
     if str(timestamp) ==  'None':
         timestamp = datetime.utcnow()
@@ -62,10 +63,10 @@ def verify_token_post(token):
 @api.route('/v1.0/gps/<token>', methods=['POST'])
 def verify_gps_post(token):
 	if token is None:
-		return "No Valid Token", 404
+		return "No Valid Token", 401
 	r = request.get_json(force=True)
 	if r is None:
-		return "No Data Posted", 405
+		return "No Data Posted", 400
 	timestamp = r['timestamp']
 	if str(timestamp) == 'None':
 		timestamp = datetime.utcnow()

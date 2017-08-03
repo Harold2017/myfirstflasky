@@ -50,37 +50,17 @@
     <script type="text/javascript">
         var myChart = echarts.init(document.getElementById('main'));
         var option = {
-    "tooltip": {},
-    "backgroundColor": "#fff",
-    "yAxis": [
-        {
-            "name": "",
-            "nameTextStyle": {
-                "fontSize": 14
-            },
-            "nameLocation": "middle",
-            "axisLabel": {
-                "formatter": "{value} "
-            },
-            "type": "value",
-            "nameGap": 25
-        }
-    ],
-    "xAxis": [
-        {
-            "name": "",
-            "nameTextStyle": {
-                "fontSize": 14
-            },
-            "data": [],
-            "nameLocation": "middle",
-            "axisLabel": {
-                "interval": "auto"
-            },
-            "type": "category",
-            "nameGap": 25
-        }
-    ],
+    "toolbox": {
+        "left": "right",
+        "show": true,
+        "top": "center",
+        "feature": {
+            "saveAsImage": {
+                "show": true
+            }
+        },
+        "orient": "vertical"
+    },
     "color": [
         "#c23531",
         "#2f4554",
@@ -108,6 +88,133 @@
         "#918597",
         "#f6f5ec"
     ],
+    "xAxis": [
+        {
+            "nameTextStyle": {
+                "fontSize": 14
+            },
+            "name": "",
+            "data": [],
+            "axisLabel": {
+                "interval": "auto"
+            },
+            "type": "category",
+            "nameGap": 25,
+            "nameLocation": "middle"
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "data"
+            ],
+            "selectedMode": "multiple",
+            "left": "center",
+            "show": true,
+            "top": "top",
+            "orient": "horizontal"
+        }
+    ],
+    "series": [
+        {
+            "symbol": "emptyCircle",
+            "name": "data",
+            "step": false,
+            "label": {
+                "normal": {
+                    "position": "top",
+                    "show": false,
+                    "formatter": null,
+                    "textStyle": {
+                        "color": "#000",
+                        "fontSize": 12
+                    }
+                },
+                "emphasis": {
+                    "show": true
+                }
+            },
+            "markPoint": {
+                "data": [
+                    {
+                        "type": "min",
+                        "symbolSize": 50,
+                        "symbol": "pin",
+                        "name": "最小值",
+                        "label": {
+                            "normal": {
+                                "textStyle": {
+                                    "color": "#fff"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "max",
+                        "symbolSize": 50,
+                        "symbol": "pin",
+                        "name": "最大值",
+                        "label": {
+                            "normal": {
+                                "textStyle": {
+                                    "color": "#fff"
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "lineStyle": {
+                "normal": {
+                    "type": "solid",
+                    "opacity": 1,
+                    "width": 1,
+                    "curveness": 0
+                }
+            },
+            "smooth": false,
+            "markLine": {
+                "data": [
+                    {
+                        "type": "average",
+                        "name": "平均値"
+                    }
+                ]
+            },
+            "data": [],
+            "indexflag": 1913868,
+            "stack": "",
+            "areaStyle": {},
+            "type": "line",
+            "showSymbol": true
+        }
+    ],
+    "backgroundColor": "#fff",
+    "dataZoom": [
+        {
+            "type": "slider",
+            "show": true,
+            "start": 50,
+            "end": 100,
+            "orient": "horizontal"
+        }
+    ],
+    "tooltip": {},
+    "yAxis": [
+        {
+            "nameTextStyle": {
+                "fontSize": 14
+            },
+            "name": "",
+            "axisLabel": {
+                "formatter": "{value} "
+            },
+            "type": "value",
+            "nameGap": 25,
+            "nameLocation": "middle"
+        }
+    ],
+    "_index_flag": 1913868,
     "title": [
         {
             "textStyle": {
@@ -118,119 +225,12 @@
                 "color": "#aaa",
                 "fontSize": 12
             },
-            "subtext": "",
             "left": "auto",
-            "text": "Data VS. Time",
-            "top": "auto"
+            "top": "auto",
+            "subtext": "",
+            "text": "Data VS. Time"
         }
-    ],
-    "series": [
-        {
-            "name": "data",
-            "showSymbol": true,
-            "label": {
-                "normal": {
-                    "textStyle": {
-                        "color": "#000",
-                        "fontSize": 12
-                    },
-                    "show": false,
-                    "formatter": null,
-                    "position": "top"
-                },
-                "emphasis": {
-                    "show": true
-                }
-            },
-            "markLine": {
-                "data": [
-                    {
-                        "type": "average",
-                        "name": "平均値"
-                    }
-                ]
-            },
-            "data": [],
-            "type": "line",
-            "stack": "",
-            "symbol": "emptyCircle",
-            "smooth": false,
-            "lineStyle": {
-                "normal": {
-                    "opacity": 1,
-                    "type": "solid",
-                    "width": 1,
-                    "curveness": 0
-                }
-            },
-            "areaStyle": {},
-            "markPoint": {
-                "data": [
-                    {
-                        "symbol": "pin",
-                        "type": "min",
-                        "symbolSize": 50,
-                        "label": {
-                            "normal": {
-                                "textStyle": {
-                                    "color": "#fff"
-                                }
-                            }
-                        },
-                        "name": "最小值"
-                    },
-                    {
-                        "symbol": "pin",
-                        "type": "max",
-                        "symbolSize": 50,
-                        "label": {
-                            "normal": {
-                                "textStyle": {
-                                    "color": "#fff"
-                                }
-                            }
-                        },
-                        "name": "最大值"
-                    }
-                ]
-            },
-            "indexflag": 1618769,
-            "step": false
-        }
-    ],
-    "dataZoom": [
-        {
-            "show": true,
-            "end": 100,
-            "start": 50,
-            "orient": "horizontal",
-            "type": "slider"
-        }
-    ],
-    "legend": [
-        {
-            "show": true,
-            "selectedMode": "multiple",
-            "left": "center",
-            "data": [
-                "data"
-            ],
-            "orient": "horizontal",
-            "top": "top"
-        }
-    ],
-    "toolbox": {
-        "show": true,
-        "left": "right",
-        "top": "center",
-        "feature": {
-            "saveAsImage": {
-                "show": true
-            }
-        },
-        "orient": "vertical"
-    },
-    "_index_flag": 1618769
+    ]
 };
         myChart.setOption(option);
     </script>
