@@ -46,6 +46,8 @@
         <p>
             {% if user == current_user %}
             <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
+            <a class="btn btn-default" href="{{ url_for('.edit_sensor') }}">Edit Sensors</a>
+            <a class="btn btn-default" href="{{ url_for('.sensors', username=user.username) }}">Check Sensors</a>
             {% endif %}
             {% if current_user.is_administrator() %}
             <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile [Admin]</a>

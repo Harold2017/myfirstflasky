@@ -26,7 +26,7 @@
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
                 {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
-                <li><a href="{{ url_for('chart.chart') }}">Chart</a></li>
+                <li><a href="{{ url_for('chart.chart1') }}">Chart</a></li>
                 <li><a href="{{ url_for('gps.mapview') }}">GPS</a></li>
                 <li><a href="{{ url_for('cri.upload') }}">CRI</a></li>
                 {% endif %}

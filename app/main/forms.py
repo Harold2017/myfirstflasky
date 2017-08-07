@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
+from wtforms import StringField, TextAreaField, BooleanField, SelectField, \
     SubmitField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
-from ..models import Role, User
+from ..models import Role, User, Sensors
 
 
 class NameForm(FlaskForm):
@@ -60,3 +60,19 @@ class PostForm(FlaskForm):
 class CommentForm(FlaskForm):
     body = StringField('Any comment?', validators=[Required()])
     submit = SubmitField('Submit')
+
+
+class EditSensorForm(FlaskForm):
+    name = StringField('Sensor name', validators=[Length(0, 64)])
+    about_sensor = TextAreaField('About sensor')
+    submit = SubmitField('Submit')
+
+
+class SelectSensorForm(FlaskForm):
+    sensor = SelectField('Sensors', coerce=int)
+    submit = SubmitField('Confirm')
+
+    def __init__(self, sensors, *args, **kwargs):
+        super(SelectSensorForm, self).__init__(*args, **kwargs)
+        self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
+        self.sensors = sensors

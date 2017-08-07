@@ -90,6 +90,7 @@ class User(UserMixin, db.Model):
     api_gps = db.relationship('Api_gps', backref='author', lazy='dynamic')
     user_files = db.relationship('User_files', backref='author', lazy='dynamic')
     user_photos = db.relationship('User_photos', backref='author', lazy='dynamic')
+    sensors = db.relationship('Sensors', backref='author', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -354,4 +355,24 @@ class User_photos(db.Model):
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
     file_path = db.Column(db.String(128))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class Sensors(db.Model):
+    __tablename__ = 'sensors'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    about_sensor = db.Column(db.Text())
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    sensor_data = db.relationship('Sensor_data', backref='sensor', lazy='dynamic')
+
+
+class Sensor_data(db.Model):
+    __tablename__ = 'sensor_data'
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
+
+
 

@@ -3,10 +3,10 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
-    CommentForm
+    CommentForm, EditSensorForm, SelectSensorForm
 from .. import db
 from ..models import User_photos
-from ..models import Permission, Role, User, Post, Comment
+from ..models import Permission, Role, User, Post, Comment, Sensors
 from ..decorators import admin_required, permission_required
 from werkzeug.utils import secure_filename
 import os
@@ -262,3 +262,29 @@ def moderate_disable(id):
     db.session.add(comment)
     return redirect(url_for('.moderate',
                             page=request.args.get('page', 1, type=int)))
+
+
+@main.route('/edit-sensor', methods=['GET', 'POST'])
+@login_required
+def edit_sensor():
+    form = EditSensorForm()
+    if form.validate_on_submit():
+        sensor = Sensors(author_id=current_user.id)
+        sensor.name = form.name.data
+        sensor.about_sensor = form.about_sensor.data
+        db.session.add(sensor)
+        flash('Your sensor has been recorded.')
+        return redirect(url_for('.sensors', username=current_user.username))
+    return render_template('edit_sensor.html', form=form)
+
+
+@main.route('/sensors/<username>', methods=['GET', 'POST'])
+@login_required
+def sensors(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    sensors = Sensors.query.filter_by(author_id=user.id).order_by(Sensors.id.desc()).all()
+    form = SelectSensorForm(sensors)
+    if form.validate_on_submit():
+        sensor = form.sensor.data
+        return redirect(url_for('chart.chart2', sensor=sensor))
+    return render_template('sensors.html', user=user, sensors=sensors, form=form)
