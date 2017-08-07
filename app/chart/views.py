@@ -54,7 +54,9 @@ def chart2(sensor):
         flash('No data is recorded!')
         valid = 0
     else:
-        line = Line(title="Data VS. Time", width=800, height=400)
+        s = Sensors.query.filter_by(sensor_id=sensor).first()
+        title = s.name
+        line = Line(title=title, width=800, height=400)
         attr = timestamp
         d = data
         line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
