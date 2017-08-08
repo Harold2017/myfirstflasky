@@ -370,8 +370,8 @@ class Sensors(db.Model):
 class Sensor_data(db.Model):
     __tablename__ = 'sensor_data'
     id = db.Column(db.Integer, primary_key=True)
-    value = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    value = db.Column(db.Integer)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
 
 

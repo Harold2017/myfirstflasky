@@ -10,8 +10,9 @@ from ..models import Permission, Role, User, Post, Comment, Sensors, Sensor_data
 from ..decorators import admin_required, permission_required
 from werkzeug.utils import secure_filename
 import os
-from pyecharts import Line
+import pygal
 from pytz import timezone
+from pygal.style import DarkSolarizedStyle
 
 
 tzchina = timezone('Asia/Shanghai')
@@ -305,13 +306,12 @@ def sensors(username):
         else:
             s = Sensors.query.filter_by(id=sensor).first()
             title = s.name
-            line = Line(title=title, width=800, height=400)
-            attr = timestamp
-            d = data
-            line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
-                     mark_point=["min", "max"])
-            path = os.path.abspath("app/templates") + "\\sensor_render.html"
-            line.render(path)
-        return render_template('sensor_render.html')
+            line_chart = pygal.Line(width=500, height=300, explicit_size=True, title=title,
+                                    style=DarkSolarizedStyle,
+                                    disable_xml_declaration=True)
+            line_chart.x_labels = timestamp
+            line_chart.add('Data', data)
+            line_chart.render()
+        return render_template('sensor_chart_pygal.html', chart=line_chart)
     else:
         return render_template('sensors.html', user=user, sensors=sensors, form=form)
