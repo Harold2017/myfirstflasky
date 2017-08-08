@@ -37,6 +37,7 @@ def chart1():
                  mark_point=["min", "max"])
         path = os.path.abspath("app/templates") + "\\render.html"
         line.render(path)
+        valid = 1
 
     return render_template('echart.html', valid=valid)
 
