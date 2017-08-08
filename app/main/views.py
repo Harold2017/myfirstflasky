@@ -301,7 +301,7 @@ def sensors(username):
             data.append(i.value)
         if len(data) is 0:
             return '''<div class="page-header">
-                        <h2>No data is recorded!</h2>
+                        <h2>No recorded data!</h2>
                     </div>'''
         else:
             s = Sensors.query.filter_by(id=sensor).first()
