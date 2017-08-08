@@ -54,7 +54,7 @@ def chart2(sensor):
         flash('No data is recorded!')
         valid = 0
     else:
-        s = Sensors.query.filter_by(sensor_id=sensor).first()
+        s = Sensors.query.filter_by(id=sensor).first()
         title = s.name
         line = Line(title=title, width=800, height=400)
         attr = timestamp
