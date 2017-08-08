@@ -6,10 +6,16 @@ from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm, EditSensorForm, SelectSensorForm
 from .. import db
 from ..models import User_photos
-from ..models import Permission, Role, User, Post, Comment, Sensors
+from ..models import Permission, Role, User, Post, Comment, Sensors, Sensor_data
 from ..decorators import admin_required, permission_required
 from werkzeug.utils import secure_filename
 import os
+from pyecharts import Line
+from pytz import timezone
+
+
+tzchina = timezone('Asia/Shanghai')
+utc = timezone('UTC')
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -286,5 +292,26 @@ def sensors(username):
     form = SelectSensorForm(sensors)
     if form.validate_on_submit():
         sensor = form.sensor.data
-        return redirect(url_for('chart.chart2', sensor=sensor))
-    return render_template('sensors.html', user=user, sensors=sensors, form=form)
+        sensor_data = Sensor_data.query.filter_by(sensor_id=sensor).order_by(Sensor_data.id.desc()).all()
+        timestamp = []
+        data = []
+        for i in sensor_data:
+            timestamp.append(i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S'))
+            data.append(i.value)
+        if len(data) is 0:
+            return '''<div class="page-header">
+                        <h1>No data is recorded!</h1>
+                    </div>'''
+        else:
+            s = Sensors.query.filter_by(id=sensor).first()
+            title = s.name
+            line = Line(title=title, width=800, height=400)
+            attr = timestamp
+            d = data
+            line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
+                     mark_point=["min", "max"])
+            path = os.path.abspath("app/templates") + "\\sensor_render.html"
+            line.render(path)
+        return render_template('sensor_render.html')
+    else:
+        return render_template('sensors.html', user=user, sensors=sensors, form=form)

@@ -7,8 +7,46 @@
 
 <h2>Sensors of {{ user.username }}</h2>
 {% if sensors %}
-<div class="col-md-4">
+<script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<div class="col-md-4" id="foo">
     {{ wtf.quick_form(form) }}
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#foo').submit(function (e) {
+            var url = "{{ url_for('main.sensors', username=user.username) }}";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('form').serialize(),
+                timeout: 10000,
+                success: function (data) {
+                    var myDiv = $('#result');
+                    myDiv.html(data);
+                }
+            });
+            e.preventDefault();
+        });
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+    });
+</script>
+
+<div class="container">
+    <p></p>
+</div>
+
+<div id='result' class="container">
+    {{ result }}
+</div>
+
 {% endif %}
 {% endblock %}
