@@ -1,8 +1,8 @@
-from flask import render_template, redirect, url_for, abort, flash, request, \
-    current_app, make_response, send_from_directory
+from flask import render_template, redirect, url_for, abort, flash, request,\
+    current_app, make_response
 from flask_login import login_required, current_user
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm, \
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm,\
     CommentForm, EditSensorForm, SelectSensorForm
 from .. import db
 from ..models import User_photos
@@ -10,8 +10,10 @@ from ..models import Permission, Role, User, Post, Comment, Sensors, Sensor_data
 from ..decorators import admin_required, permission_required
 from werkzeug.utils import secure_filename
 import os
-from pyecharts import Line
+import pygal
 from pytz import timezone
+from pygal.style import DarkSolarizedStyle
+
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
@@ -126,7 +128,7 @@ def post(id):
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count() - 1) // \
-               current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
     pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
         page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
         error_out=False)
@@ -222,7 +224,7 @@ def followed_by(username):
 @login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '', max_age=30 * 24 * 60 * 60)
+    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
     return resp
 
 
@@ -230,7 +232,7 @@ def show_all():
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
 
 
@@ -304,15 +306,12 @@ def sensors(username):
         else:
             s = Sensors.query.filter_by(id=sensor).first()
             title = s.name
-            line = Line(title=title, width=800, height=400)
-            attr = timestamp
-            d = data
-            line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
-                     mark_point=["min", "max"])
-            root = os.path.abspath("app/templates")
-            path = root + "\\sensor_render_pyecharts.html"
-            line.render(path)
-            #return send_from_directory(root, 'sensor_render_pyecharts.html')
-            return render_template('sensor_render_pyecharts.html')
+            line_chart = pygal.Line(width=500, height=300, explicit_size=True, title=title,
+                                    style=DarkSolarizedStyle,
+                                    disable_xml_declaration=True)
+            line_chart.x_labels = timestamp
+            line_chart.add('Data', data)
+            line_chart.render()
+        return render_template('sensor_chart_pygal.html', chart=line_chart)
     else:
         return render_template('sensors.html', user=user, sensors=sensors, form=form)

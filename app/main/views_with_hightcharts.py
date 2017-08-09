@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, abort, flash, request, \
-    current_app, make_response, send_from_directory
+    current_app, make_response
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, \
@@ -10,7 +10,7 @@ from ..models import Permission, Role, User, Post, Comment, Sensors, Sensor_data
 from ..decorators import admin_required, permission_required
 from werkzeug.utils import secure_filename
 import os
-from pyecharts import Line
+from highcharts import Highchart
 from pytz import timezone
 
 tzchina = timezone('Asia/Shanghai')
@@ -304,15 +304,20 @@ def sensors(username):
         else:
             s = Sensors.query.filter_by(id=sensor).first()
             title = s.name
-            line = Line(title=title, width=800, height=400)
-            attr = timestamp
-            d = data
-            line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
-                     mark_point=["min", "max"])
-            root = os.path.abspath("app/templates")
-            path = root + "\\sensor_render_pyecharts.html"
-            line.render(path)
-            #return send_from_directory(root, 'sensor_render_pyecharts.html')
-            return render_template('sensor_render_pyecharts.html')
+            chart = Highchart()
+            chart.set_options('title', {'text': 'Data VS. Time'})
+            chart.add_data_set(data, series_type='line', name=title)
+            chart.set_options('xAxis', {'categories': timestamp})
+            chart.set_options('xAxis', {'reversed': True})
+            chart.set_options('chart', {'zoomType': 'x'})
+            chart.set_options('legend', {'layout': 'vertical', 'align': 'right',
+                                         'verticalAlign': 'middle', 'borderWidth': 0})
+            chart.set_options('plotOptions', {'line': {
+                'dataLabels': {
+                    'enabled': True
+                }}})
+            path = os.path.abspath("app/templates") + "\\sensor_render_hightcharts"
+            chart.save_file(path)
+        return render_template('sensor_render_hightcharts.html')
     else:
         return render_template('sensors.html', user=user, sensors=sensors, form=form)
