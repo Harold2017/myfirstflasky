@@ -1,9 +1,10 @@
 from flask import render_template, redirect, url_for, abort, flash, request, \
-    current_app, make_response, send_from_directory
+    current_app, make_response
 from flask_login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, \
-    CommentForm, EditSensorForm, SelectSensorForm
+    CommentForm, EditSensorForm, SelectSensorForm, DeleteSensorForm, AddSensorForm, \
+    NoSensorForm
 from .. import db
 from ..models import User_photos
 from ..models import Permission, Role, User, Post, Comment, Sensors, Sensor_data
@@ -12,6 +13,18 @@ from werkzeug.utils import secure_filename
 import os
 from pyecharts import Line
 from pytz import timezone
+from flask_table import Table, Col
+
+
+class ItemTable(Table):
+    name = Col('Name')
+    id = Col('id')
+
+
+class Item(object):
+    def __init__(self, name, id):
+        self.name = name
+        self.id = id
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
@@ -272,26 +285,78 @@ def moderate_disable(id):
 @main.route('/edit-sensor', methods=['GET', 'POST'])
 @login_required
 def edit_sensor():
-    form = EditSensorForm()
+    user = current_user
+    if Sensors.query.filter_by(author_id=user.id).first():
+        sensors = Sensors.query.filter_by(author_id=user.id).order_by(Sensors.id.desc()).all()
+        form = EditSensorForm(sensors)
+        warn = 0
+        table = ItemTable(sensors)
+    else:
+        warn = 'No sensors recorded.'
+        form = NoSensorForm()
+        table = 0
+    if form.validate_on_submit():
+        if form.add.data:
+            return redirect(url_for('.add_sensor'))
+        elif form.delete.data:
+            return redirect(url_for('.delete_sensor'))
+        else:
+            pass
+    return render_template('edit_sensor.html', warn=warn, form=form, table=table)
+
+
+@main.route('/add-sensor', methods=['GET', 'POST'])
+@login_required
+def add_sensor():
+    form = AddSensorForm()
     if form.validate_on_submit():
         sensor = Sensors(author_id=current_user.id)
         sensor.name = form.name.data
         sensor.about_sensor = form.about_sensor.data
         db.session.add(sensor)
         flash('Your sensor has been recorded.')
-        return redirect(url_for('.sensors', username=current_user.username))
-    return render_template('edit_sensor.html', form=form)
+        return redirect(url_for('.edit_sensor'))
+    return render_template('add_sensor.html', form=form)
+
+
+@main.route('/delete-sensor', methods=['GET', 'POST'])
+@login_required
+def delete_sensor():
+    user = current_user
+    if Sensors.query.filter_by(author_id=user.id).first():
+        sensors = Sensors.query.filter_by(author_id=user.id).order_by(Sensors.id.desc()).all()
+        form = DeleteSensorForm(sensors)
+        warn = 0
+    else:
+        warn = 'No sensors recorded.'
+        form = NoSensorForm()
+    if form.validate_on_submit():
+        sensor = form.sensor.data
+        sensor_d = Sensors.query.filter_by(id=sensor).first()
+        sensor_data = Sensor_data.query.filter_by(sensor_id=sensor).all()
+        for d in sensor_data:
+            db.session.delete(d)
+        db.session.delete(sensor_d)
+        flash('Your sensor has been deleted.')
+        return redirect(url_for('.edit_sensor'))
+    return render_template('delete_sensor.html', warn=warn, form=form)
 
 
 @main.route('/sensors/<username>', methods=['GET', 'POST'])
 @login_required
 def sensors(username):
     user = User.query.filter_by(username=username).first_or_404()
-    sensors = Sensors.query.filter_by(author_id=user.id).order_by(Sensors.id.desc()).all()
-    form = SelectSensorForm(sensors)
+    if Sensors.query.filter_by(author_id=user.id).first():
+        sensors = Sensors.query.filter_by(author_id=user.id).order_by(Sensors.id.desc()).all()
+        form = SelectSensorForm(sensors, prefix="form")
+        form2 = NoSensorForm(prefix="form2")
+    else:
+        sensors = 0
+        form = NoSensorForm(prefix="form")
+        form2 = NoSensorForm(prefix="form2")
     if form.validate_on_submit():
         sensor = form.sensor.data
-        sensor_data = Sensor_data.query.filter_by(sensor_id=sensor).order_by(Sensor_data.id.desc()).all()
+        sensor_data = Sensor_data.query.filter_by(sensor_id=sensor).order_by(-Sensor_data.id.desc()).all()
         timestamp = []
         data = []
         for i in sensor_data:
@@ -315,4 +380,6 @@ def sensors(username):
             #return send_from_directory(root, 'sensor_render_pyecharts.html')
             return render_template('sensor_render_pyecharts.html')
     else:
-        return render_template('sensors.html', user=user, sensors=sensors, form=form)
+        if form2.validate_on_submit():
+            return redirect(url_for('.add_sensor'))
+        return render_template('sensors.html', user=user, sensors=sensors, form=form, form2=form2)

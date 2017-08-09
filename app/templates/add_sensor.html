@@ -5,21 +5,9 @@
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Edit Your Sensor</h1>
+    <h1>Add Sensor</h1>
 </div>
-{% if warn %}
-<h2>{{ warn }}</h2>
-{% endif %}
-
 <div class="col-md-4">
     {{ wtf.quick_form(form) }}
 </div>
-{% if table %}
-<div class="container">
-    <p></p>
-</div>
-<div class="container">
-    {{ table }}
-</div>
-{% endif %}
 {% endblock %}

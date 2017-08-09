@@ -5,7 +5,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
-from ..models import Role, User, Sensors
+from ..models import Role, User
 
 
 class NameForm(FlaskForm):
@@ -63,16 +63,41 @@ class CommentForm(FlaskForm):
 
 
 class EditSensorForm(FlaskForm):
-    name = StringField('Sensor name', validators=[Length(0, 64)])
-    about_sensor = TextAreaField('About sensor')
-    submit = SubmitField('Submit')
+    sensor = SelectField('Sensors', coerce=int)
+    add = SubmitField('Add sensor')
+    delete = SubmitField('Delete sensor')
+
+    def __init__(self, sensors, *args, **kwargs):
+        super(EditSensorForm, self).__init__(*args, **kwargs)
+        self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
+        self.sensors = sensors
+
+
+class NoSensorForm(FlaskForm):
+    add = SubmitField('Add sensor')
 
 
 class SelectSensorForm(FlaskForm):
     sensor = SelectField('Sensors', coerce=int)
-    submit = SubmitField('Confirm')
+    submit = SubmitField('Plot Data')
 
     def __init__(self, sensors, *args, **kwargs):
         super(SelectSensorForm, self).__init__(*args, **kwargs)
+        self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
+        self.sensors = sensors
+
+
+class AddSensorForm(FlaskForm):
+    name = StringField('Sensor name', validators=[Length(0, 64)])
+    about_sensor = TextAreaField('About sensor')
+    submit = SubmitField('Add sensor')
+
+
+class DeleteSensorForm(FlaskForm):
+    sensor = SelectField('Sensors', coerce=int)
+    submit = SubmitField('Delete sensor')
+
+    def __init__(self, sensors, *args, **kwargs):
+        super(DeleteSensorForm, self).__init__(*args, **kwargs)
         self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
         self.sensors = sensors

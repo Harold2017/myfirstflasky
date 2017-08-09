@@ -52,5 +52,11 @@
     {{ result }}
 </div>
 
+{% else %}
+<h2> No sensor recorded. </h2>
+<div class="col-md-4" id="foo">
+    {{ wtf.quick_form(form2) }}
+</div>
+
 {% endif %}
 {% endblock %}
