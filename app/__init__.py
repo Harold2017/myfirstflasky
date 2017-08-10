@@ -52,4 +52,7 @@ def create_app(config_name):
     from .cri import cri as cri_blueprint
     app.register_blueprint(cri_blueprint, url_prefix='/cri')
 
+    from .manual import manual as manual_blueprint
+    app.register_blueprint(manual_blueprint, url_prefix='/manual')
+
     return app

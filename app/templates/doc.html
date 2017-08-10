@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}NAMI{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h3>Hello, please follow the manual to start your IoT trip!</h3>
+    <p>Welcome to NAMI IoT Platform!</p>
+    <li><a href="http://www.nami.org.hk/en/nami/contact_us.html">Please share your comments with us!</a></li>
+</div>
+
+<div class="container">
+    <h3>Register</h3>
+    <p>Hi, <a href="{{ url_for('auth.register') }}">Register</a> now!</p>
+</div>
+
+<div class="container">
+    <h3>Log In</h3>
+    <p>You should <a href="{{ url_for('auth.login') }}">Log In</a> first if you want use our service</p>
+</div>
+
+<div class="container">
+    <h3>API</h3>
+    <p>Find your api token on Profile page.</p>
+    <p>Add one sensor on Edit Sensors page.</p>
+    <p>You will find your sensor id in the sensors table.</p>
+    <p>Combine this sensor id and your Api Token, make a HTTP post as the following shows:</p>
+    <p>http://OurWebSite/api/v2.0/Api_Token/Sensor_Id</p>
+    <p>Post body: {"timestamp":UTC_time (or "None"), "value": number}</p>
+    <p>Then check your data point on Chart page.</p>
+    <p>For gps, the HTTP post should be:</p>
+    <p>http://OurWebSite/api/v1.0/gps/Api_Token</p>
+    <p>Post body: {"timestamp":UTC_time (or "None"), "lat": number, "lng": number}</p>
+    <p>Then check your data point on GPS page.</p>
+</div>
+
+{% endblock %}
