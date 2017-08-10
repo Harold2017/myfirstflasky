@@ -32,7 +32,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
-    GoogleMaps(app, key="GoogleMap API KEY")
+    GoogleMaps(app, key="AIzaSyDOqdKlBwyAWZj8REdqLWpR3NDU4f2q8IE")
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

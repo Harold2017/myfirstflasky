@@ -19,12 +19,14 @@ from flask_table import Table, Col
 class ItemTable(Table):
     name = Col('Name')
     id = Col('id')
+    classes = ['table', 'table-bordered']
 
 
 class Item(object):
     def __init__(self, name, id):
         self.name = name
         self.id = id
+
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
