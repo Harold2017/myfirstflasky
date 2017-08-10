@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, current_app, redirect, url_for
+from flask import render_template, flash, request, redirect, url_for
 from flask_login import login_required, current_user
 from ..models import User_files
 from .. import db
@@ -31,7 +31,7 @@ def allowed_file(filename):
 @login_required
 def upload():
     user_file = User_files(author_id=current_user.id)
-    return render_template('upload.html', user_file=user_file)
+    return render_template('upload.html', user_file=user_file, chart=line_chart())
 
 
 @cri.route('/v1.0/upload', methods=['GET', 'POST'])
@@ -66,6 +66,10 @@ def upload_spectrum():
 @cri.route('/v1.0/chart')
 @login_required
 def cri_chart():
+    return render_template('cri_chart.html', chart=line_chart())
+
+
+def line_chart():
     author_id = current_user.id
     user_file = User_files.query.filter_by(author_id=author_id).order_by(User_files.id.desc()).first()
     file_path = user_file.file_path
@@ -74,7 +78,6 @@ def cri_chart():
         return render_template('404.html'), 404
     with open(file_path) as f:
         data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
-        #data = f.readlines()
         f.close()
 
     if len(data) is 0:
@@ -82,20 +85,14 @@ def cri_chart():
 
     line = Line(title="Spectrum", width=800, height=400)
 
-    attr = line.pdcast(data.ix[:, [0]])
-    d = line.pdcast(data.ix[:, [1]])
-    x = []
-    y = []
-    for i in d[0]:
-        y.extend(i)
-    for i in attr[0]:
-        x.extend(i)
-    line.add("Spectrum", x, y, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
+    attr = [i[0] for i in data.values]
+    d = [i[1] for i in data.values]
+    line.add("Spectrum", x_axis=attr, y_axis=d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
              mark_point=["min", "max"])
-    path = os.path.abspath("app/templates") + "\\cri_render.html"
-    line.render(path)
-
-    return render_template('cri_chart.html')
+    #root = os.path.abspath("app/templates")
+    #path = root + "\\cri_render.html"
+    return line.render_embed()
+    #line.render(path)
 
 
 

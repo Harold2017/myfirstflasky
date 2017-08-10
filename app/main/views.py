@@ -376,11 +376,8 @@ def sensors(username):
             d = data
             line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
                      mark_point=["min", "max"])
-            root = os.path.abspath("app/templates")
-            path = root + "\\sensor_render_pyecharts.html"
-            line.render(path)
-            #return send_from_directory(root, 'sensor_render_pyecharts.html')
-            return render_template('sensor_render_pyecharts.html')
+            line.render_embed()
+            return render_template('sensor_render_pyecharts.html', chart=line.render_embed())
     else:
         if form2.validate_on_submit():
             return redirect(url_for('.add_sensor'))

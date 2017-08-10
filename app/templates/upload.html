@@ -6,8 +6,11 @@
     <h1>CRI charts</h1>
 </div>
 
-<div class="output">
-    {% include "cri_render.html" %}
+<script src="http://oog4yfyu0.bkt.clouddn.com/echarts.min.js"></script>
+<script src="http://oog4yfyu0.bkt.clouddn.com/echarts-gl.js"></script>
+
+<div class="container">
+    {{ chart|safe }}
 </div>
 {% endif %}
 
