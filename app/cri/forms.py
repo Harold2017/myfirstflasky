@@ -6,26 +6,26 @@ from wtforms import ValidationError
 from ..models import User, User_files
 
 
-class EditSensorForm(FlaskForm):
-    sensor = SelectField('Sensors', coerce=int)
-    add = SubmitField('Add sensor')
-    delete = SubmitField('Delete sensor')
+class EditSpectrumForm(FlaskForm):
+    spectrum = SelectField('Spectrum', coerce=int)
+    add = SubmitField('Add spectrum')
+    delete = SubmitField('Delete spectrum')
 
-    def __init__(self, sensors, *args, **kwargs):
-        super(EditSensorForm, self).__init__(*args, **kwargs)
-        self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
-        self.sensors = sensors
-
-
-class NoSensorForm(FlaskForm):
-    add = SubmitField('Add sensor')
+    def __init__(self, spectrum, *args, **kwargs):
+        super(EditSpectrumForm, self).__init__(*args, **kwargs)
+        self.s.choices = [(s.id, s.name) for s in spectrum]
+        self.spectrum = spectrum
 
 
-class SelectSensorForm(FlaskForm):
-    sensor = SelectField('Sensors', coerce=int)
-    submit = SubmitField('Plot Data')
+class NoSpectrumForm(FlaskForm):
+    add = SubmitField('Add spectrum')
 
-    def __init__(self, sensors, *args, **kwargs):
-        super(SelectSensorForm, self).__init__(*args, **kwargs)
-        self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
-        self.sensors = sensors
+
+class SelectSpectrumForm(FlaskForm):
+    spectrum = SelectField('Spectrum', coerce=int)
+    submit = SubmitField('Show spectrum')
+
+    def __init__(self, spectrum, *args, **kwargs):
+        super(SelectSpectrumForm, self).__init__(*args, **kwargs)
+        self.s.choices = [(s.id, s.name) for s in spectrum]
+        self.spectrum = spectrum
