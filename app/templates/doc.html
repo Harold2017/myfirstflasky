@@ -21,17 +21,17 @@
 
 <div class="container">
     <h3>API</h3>
-    <p>Find your api token on Profile page.</p>
-    <p>Add one sensor on Edit Sensors page.</p>
-    <p>You will find your sensor id in the sensors table.</p>
-    <p>Combine this sensor id and your Api Token, make a HTTP post as the following shows:</p>
-    <p>http://OurWebSite/api/v2.0/Api_Token/Sensor_Id</p>
-    <p>Post body: {"timestamp":UTC_time (or "None"), "value": number}</p>
-    <p>Then check your data point on Chart page.</p>
-    <p>For gps, the HTTP post should be:</p>
-    <p>http://OurWebSite/api/v1.0/gps/Api_Token</p>
-    <p>Post body: {"timestamp":UTC_time (or "None"), "lat": number, "lng": number}</p>
-    <p>Then check your data point on GPS page.</p>
+    <p>1. Find your api token on <mark>Profile</mark> page.</p>
+    <p>2. Add one sensor on <mark>Edit Sensors</mark> page.</p>
+    <pre>   You will find your <mark>sensor id</mark> in the <mark>sensors table</mark>.</pre>
+    <pre>   Combine this <mark>sensor id</mark> and your <mark>Api Token</mark>, make a HTTP post as the following shows:</pre>
+    <p>     <code>http://OurWebSite/api/v2.0/Api_Token/Sensor_Id</code></p>
+    <p>     Post body: <code>{"timestamp":UTC_time (or "None"), "value": number}</code></p>
+    <pre>   Then check your data point on <mark>Chart</mark> page.</pre>
+    <p>3. For gps, the HTTP post should be:</p>
+    <p>     <code>http://OurWebSite/api/v1.0/gps/Api_Token</code></p>
+    <p>     Post body: <code>{"timestamp":UTC_time (or "None"), "lat": number, "lng": number}</code></p>
+    <pre>   Then check your data point on <mark>GPS</mark> page.</pre>
 </div>
 
 {% endblock %}
