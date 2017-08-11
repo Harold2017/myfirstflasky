@@ -16,20 +16,24 @@ from pytz import timezone
 from flask_table import Table, Col
 
 
+tzchina = timezone('Asia/Shanghai')
+utc = timezone('UTC')
+
+
 class ItemTable(Table):
     name = Col('Name')
     id = Col('id')
     classes = ['table', 'table-bordered']
+    about_sensor = Col('about_sensor')
+    timestamp = Col('UTC_timestamp')
 
 
 class Item(object):
-    def __init__(self, name, id):
+    def __init__(self, name, id, about_sensor, timestamp):
         self.name = name
         self.id = id
-
-
-tzchina = timezone('Asia/Shanghai')
-utc = timezone('UTC')
+        self.about_sensor = about_sensor
+        self.timestamp = timestamp
 
 
 @main.route('/', methods=['GET', 'POST'])

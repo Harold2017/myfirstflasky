@@ -40,7 +40,7 @@ def upload():
         user_file = 0
         chart = 0
         return render_template('upload.html', user_file=user_file, chart=chart)
-    user_file = User_files(author_id=current_user.id)
+    user_file = 1
     return render_template('upload.html', user_file=user_file, chart=line_chart())
 
 
