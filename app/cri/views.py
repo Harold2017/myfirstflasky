@@ -7,12 +7,24 @@ from werkzeug.utils import secure_filename
 from pyecharts import Line
 import os
 import pandas as pd
+from flask_wtf import FlaskForm
+from wtforms import SelectField, SubmitField
 #import math
 #import numpy as np
 
 
 upload_folder = os.path.abspath("app") + "\\uploads"
 extensions = set(['csv', 'txt', 'png', 'jpg', 'jpeg'])
+
+
+class SelectSpectrumForm(FlaskForm):
+    spectra = SelectField('Sensors', coerce=int)
+    submit = SubmitField('Plot Data')
+
+    def __init__(self, spectrum, *args, **kwargs):
+        super(SelectSpectrumForm, self).__init__(*args, **kwargs)
+        self.spectra.choices = [(spectra.id, spectra.timestamp) for spectra in spectrum]
+        self.spectrum = spectrum
 
 
 def allowed_file(filename):
@@ -73,16 +85,34 @@ def upload_spectrum():
         #return result
 
 
-@cri.route('/v1.0/chart')
+@cri.route('/v1.0/chart', methods=['GET', 'POST'])
 @login_required
 def cri_chart():
-    return render_template('cri_chart.html', chart=line_chart())
+    if User_files.query.filter_by(author_id=current_user.id).first():
+        spectrum = User_files.query.filter_by(author_id=current_user.id).order_by(User_files.id.desc()).all()
+        form = SelectSpectrumForm(spectrum)
+        chart = 0
+    else:
+        form = 0
+        chart = 0
+    if form.validate_on_submit():
+        spectra = form.spectra.data
+        user_file = User_files.query.filter_by(id=spectra).first()
+        id = user_file.id
+        chart = line_chart(id)
+        spectrum = User_files.query.filter_by(author_id=current_user.id).order_by(User_files.id.desc()).all()
+        form = SelectSpectrumForm(spectrum)
+    return render_template('cri_chart.html', form=form, chart=chart)
 
 
-def line_chart():
-    author_id = current_user.id
-    user_file = User_files.query.filter_by(author_id=author_id).order_by(User_files.id.desc()).first()
-    file_path = user_file.file_path
+def line_chart(*args):
+    if not args:
+        author_id = current_user.id
+        user_file = User_files.query.filter_by(author_id=author_id).order_by(User_files.id.desc()).first()
+        file_path = user_file.file_path
+    else:
+        file = User_files.query.filter_by(id=args).first()
+        file_path = file.file_path
     if file_path is None:
         flash('No Spectrum is uploaded!')
         return render_template('404.html'), 404

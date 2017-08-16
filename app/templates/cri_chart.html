@@ -1,13 +1,50 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
 <div class="page-header">
     <h1>CRI charts</h1>
 </div>
 <script src="http://oog4yfyu0.bkt.clouddn.com/echarts.min.js"></script>
 <script src="http://oog4yfyu0.bkt.clouddn.com/echarts-gl.js"></script>
+{% if form %}
+<div class="col-md-4" id="foo">
+    {{ wtf.quick_form(form) }}<br>
+    <a href="{{ url_for('cri.upload') }}" class="btn btn-default">Back</a>
+</div>
 
+<script>
+    $(document).ready(function() {
+        $('#foo').submit(function (e) {
+            var url = "{{ url_for('cri.cri_chart') }}";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('form').serialize(),
+                timeout: 10000,
+                success: function (data) {
+                    var myDiv = $('#result');
+                    myDiv.html(data);
+                }
+            });
+            e.preventDefault();
+        });
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+    });
+</script>
+{% endif %}
+<div class="container">
+    <p></p>
+</div>
+{% if chart %}
 <div class="container">
     {{ chart|safe }}
 </div>
-
+{% endif %}
 {% endblock %}
