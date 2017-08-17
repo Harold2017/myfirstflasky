@@ -1,11 +1,12 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
-from ..models import Api, Sensors, Sensor_data
+from ..models import User, Sensors, Sensor_data
 from . import chart
 from pytz import timezone
 # import pygal
 from pyecharts import Line
 import os
+from ..main.forms import SelectMultipleSensorForm
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
@@ -18,28 +19,16 @@ def chart1():
     return redirect(url_for('main.sensors', username=username))
 
 
-@chart.route('/v1.0/<sensor>')
+@chart.route('/v2.0', methods=['GET', 'POST'])
 @login_required
-def chart2(sensor):
-    sensor_data = Sensor_data.query.filter_by(sensor_id=sensor).order_by(Sensor_data.id.desc()).all()
-    timestamp = []
-    data = []
-    for i in sensor_data:
-        timestamp.append(i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S'))
-        data.append(i.value)
-    if len(data) is 0:
-        flash('No data is recorded!')
-        valid = 0
-    else:
-        s = Sensors.query.filter_by(id=sensor).first()
-        title = s.name
-        line = Line(title=title, width=800, height=400)
-        attr = timestamp
-        d = data
-        line.add("data", attr, d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
-                 mark_point=["min", "max"])
-        path = os.path.abspath("app/templates") + "\\sensor_render.html"
-        line.render(path)
-        valid = 1
+def chart3():
+    if Sensors.query.filter_by(author_id=current_user.id).first():
+        sensors = Sensors.query.filter_by(author_id=current_user.id).order_by(Sensors.id.desc()).all()
+        form = SelectMultipleSensorForm(sensors, prefix="sensorform")
+    if request.method == 'POST':
+        options = request.form.getlist('myform')
+        #as_dict = request.form.to_dict()
+        #print(request)
+        print(options)
 
-    return render_template('sensor_chart.html', valid=valid)
+    return render_template('sensor_chart.html', form=form)

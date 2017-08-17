@@ -49,7 +49,7 @@ pandas==0.20.3
 Pillow==4.2.1
 Pillow-PIL==0.1.dev0
 pprint==0.1
-pyecharts==0.1.9.3
+pyecharts==0.1.9.4
 pygal==2.4.0
 PyHighcharts==2.0
 PyMySQL==0.7.11

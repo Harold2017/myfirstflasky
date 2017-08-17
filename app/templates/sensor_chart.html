@@ -1,12 +1,11 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
 <div class="page-header">
     <h1>Sensor_charts</h1>
 </div>
-
-{% if valid != 0 %}
-<div class="output">
-    {% include "sensor_render.html" %}
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
 </div>
-{% endif %}
+
 {% endblock %}

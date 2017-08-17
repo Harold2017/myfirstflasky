@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, BooleanField, SelectField, \
-    SubmitField
+    SubmitField, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
@@ -101,3 +101,14 @@ class DeleteSensorForm(FlaskForm):
         super(DeleteSensorForm, self).__init__(*args, **kwargs)
         self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
         self.sensors = sensors
+
+
+class SelectMultipleSensorForm(FlaskForm):
+    sensor = SelectMultipleField('Sensors', coerce=int)
+    submit = SubmitField('Plot multi-sensors data')
+
+    def __init__(self, sensors, *args, **kwargs):
+        super(SelectMultipleSensorForm, self).__init__(*args, **kwargs)
+        self.sensor.choices = [(sensor.id, sensor.name) for sensor in sensors]
+        self.sensors = sensors
+
