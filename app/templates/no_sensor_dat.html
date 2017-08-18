@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block page_content %}
+
+{% if no_sensor %}
+<h2>No sensors added!</h2>
+<div class="container">
+      <a href="{{ url_for('main.add_sensor') }}" class="btn btn-default">Add Sensor</a>
+</div>
+{% endif %}
+<h2>No data is recorded</h2>
+
+{% endblock %}
