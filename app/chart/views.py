@@ -29,7 +29,7 @@ def chart3():
 
         if form.validate_on_submit():
             options = form.sensor.data
-            line = Line(title='LineChart', width=800, height=400)
+            line = Line(width=800, height=400)
             for sensor in options:
                 sensor_data = Sensor_data.query.filter_by(sensor_id=sensor).order_by(-Sensor_data.id.desc()).all()
                 timestamp = []
