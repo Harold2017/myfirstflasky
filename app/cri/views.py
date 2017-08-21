@@ -157,11 +157,13 @@ def line_chart(*args):
 
     attr = [i[0] for i in data.values]
     d = [i[1] for i in data.values]
+    #from .test import cie_xyz
+    #output = cie_xyz(attr, d)
     line.add("Spectrum", x_axis=attr, y_axis=d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
              mark_point=["min", "max"])
     #root = os.path.abspath("app/templates")
     #path = root + "\\cri_render.html"
-    return line.render_embed()
+    return line.render_embed()#, output
     #line.render(path)
 
 
