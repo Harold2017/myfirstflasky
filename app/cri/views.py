@@ -11,7 +11,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField, SelectMultipleField
 from pytz import timezone
 
-from colour.plotting import CIE_1931_chromaticity_diagram_plot, single_spd_plot
+from colour.plotting import CIE_1931_chromaticity_diagram_plot, single_spd_plot, multi_spd_plot
 from colour import CMFS, ILLUMINANTS_RELATIVE_SPDS, SpectralPowerDistribution, spectral_to_XYZ, XYZ_to_xy
 import pandas as pd
 import pylab
@@ -110,13 +110,20 @@ def cri_chart():
     if User_files.query.filter_by(author_id=current_user.id).first():
         spectrum = User_files.query.filter_by(author_id=current_user.id).order_by(User_files.id.desc()).all()
         form = SelectMultipleSpectrumForm(spectrum)
-        chart = 0
+        #chart = 0
+        spd = 0
     else:
         form = 0
-        chart = 0
+        #chart = 0
+        spd = 0
     if form.validate_on_submit():
         spectrum = form.spectra.data
-        line = Line(width=800, height=400)
+        file_path = []
+        for spectra in spectrum:
+            user_file = User_files.query.filter_by(id=spectra).first()
+            file_path.append(user_file.file_path)
+        spd = multiple(file_path)
+        '''line = Line(width=800, height=400)
         for spectra in spectrum:
             user_file = User_files.query.filter_by(id=spectra).first()
             file_path = user_file.file_path
@@ -135,10 +142,11 @@ def cri_chart():
             d = [i[1] for i in data.values]
             line.add(title, x_axis=attr, y_axis=d, is_smooth=False, is_datazoom_show=True, mark_line=["average"],
                      mark_point=["min", "max"])
-        chart = line.render_embed()
+        chart = line.render_embed()'''
     spectrum = User_files.query.filter_by(author_id=current_user.id).order_by(User_files.id.desc()).all()
     form = SelectMultipleSpectrumForm(spectrum)
-    return render_template('cri_chart.html', form=form, chart=chart)
+    #return render_template('cri_chart.html', form=form, chart=chart)
+    return render_template('cri_chart.html', form=form, spd=spd)
 
 
 def line_chart(*args):
@@ -229,4 +237,48 @@ def cie1931(*args):
     return figdata_svg, valid, xy, figdata_svg_b
 
 
+def multiple(args):
+    cmfs = CMFS['CIE 1931 2 Degree Standard Observer']
+    spd = []
+    for d in args:
+        with open(d) as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
+        w = [i[0] for i in data.values]
+        s = [i[1] for i in data.values]
+        data_formated = dict(zip(w, s))
+        spd.append(SpectralPowerDistribution('Sample', data_formated))
+    b = multi_spd_plot(spd, standalone=False, figure_size=(5, 5), title='Spectrum')
+    figfile_b = StringIO()
+    b.savefig(figfile_b, format='svg')
+    figfile_b.seek(0)
+    figdata_svg_b = '<svg' + figfile_b.getvalue().split('<svg')[1]
+    b.clf()
+    plot.close(b)
+
+    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
+                                       title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
+    illuminant = ILLUMINANTS_RELATIVE_SPDS['D50']
+    for s in spd:
+        XYZ = spectral_to_XYZ(s, cmfs, illuminant)
+        xy = XYZ_to_xy(XYZ)
+        print(xy)
+
+        x, y = xy
+        pylab.plot(x, y, 'o-', color='white')
+        pylab.annotate((("%.4f" % x), ("%.4f" % y)),
+                       xy=xy,
+                       xytext=(-50, 30),
+                       textcoords='offset points',
+                       arrowprops=dict(arrowstyle='->', connectionstyle='arc3, rad=-0.2'))
+
+    a = plot.gcf()
+    figfile = StringIO()
+    a.savefig(figfile, format='svg')
+    figfile.seek(0)
+    figdata_svg = '<svg' + figfile.getvalue().split('<svg')[1]
+    a.clf()
+    plot.close(a)
+    del a, b
+    return figdata_svg, figdata_svg_b
 
