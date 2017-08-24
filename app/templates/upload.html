@@ -11,9 +11,21 @@
 <script src="http://oog4yfyu0.bkt.clouddn.com/echarts.min.js"></script>
 <script src="http://oog4yfyu0.bkt.clouddn.com/echarts-gl.js"></script>
 
+{% if chart %}
 <div class="container">
     {{ chart|safe }}
 </div>
+{% endif %}
+{% if cie1931[1] %}
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[3]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[0]|safe }}
+</div>
+<p>x is {{ cie1931[2][0] }}, y is {{ cie1931[2][1] }}</p>
+
+{% endif %}
 {% endif %}
 
 

@@ -6,12 +6,18 @@ from . import cri
 from werkzeug.utils import secure_filename
 from pyecharts import Line
 import os
-import pandas as pd
+
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField, SelectMultipleField
 from pytz import timezone
-#import math
-#import numpy as np
+
+from colour.plotting import CIE_1931_chromaticity_diagram_plot, single_spd_plot
+from colour import CMFS, ILLUMINANTS_RELATIVE_SPDS, SpectralPowerDistribution, spectral_to_XYZ, XYZ_to_xy
+import pandas as pd
+import pylab
+from io import StringIO
+import matplotlib.pyplot as plot
+
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
@@ -66,7 +72,7 @@ def upload():
         chart = 0
         return render_template('upload.html', user_file=user_file, chart=chart)
     user_file = 1
-    return render_template('upload.html', user_file=user_file, chart=line_chart())
+    return render_template('upload.html', user_file=user_file, cie1931=cie1931())
 
 
 @cri.route('/v1.0/upload', methods=['GET', 'POST'])
@@ -167,7 +173,60 @@ def line_chart(*args):
     #line.render(path)
 
 
+def cie1931(*args):
+    cmfs = CMFS['CIE 1931 2 Degree Standard Observer']
+    if not args:
+        author_id = current_user.id
+        user_file = User_files.query.filter_by(author_id=author_id).order_by(User_files.id.desc()).first()
+        file_path = user_file.file_path
+    else:
+        file = User_files.query.filter_by(id=args).first()
+        file_path = file.file_path
+    if file_path is None:
+        flash('No Spectrum is uploaded!')
+        return render_template('404.html'), 404
+    with open(file_path) as f:
+        data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+        f.close()
 
+    if len(data) is 0:
+        flash('No data is uploaded!')
+        valid = 0
+    valid = 1
+    w = [i[0] for i in data.values]
+    s = [i[1] for i in data.values]
+    data_formated = dict(zip(w, s))
+    spd = SpectralPowerDistribution('Sample', data_formated)
+    b = single_spd_plot(spd, standalone=False, figure_size=(5, 5), title='Spectrum')
+    figfile_b = StringIO()
+    b.savefig(figfile_b, format='svg')
+    figfile_b.seek(0)
+    figdata_svg_b = '<svg' + figfile_b.getvalue().split('<svg')[1]
+    b.clf()
+    plot.close(b)
+    illuminant = ILLUMINANTS_RELATIVE_SPDS['D50']
+    XYZ = spectral_to_XYZ(spd, cmfs, illuminant)
+    xy = XYZ_to_xy(XYZ)
+
+    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
+                                       title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
+    x, y = xy
+    pylab.plot(x, y, 'o-', color='white')
+    pylab.annotate((("%.4f" % x), ("%.4f" % y)),
+                   xy=xy,
+                   xytext=(-50, 30),
+                   textcoords='offset points',
+                   arrowprops=dict(arrowstyle='->', connectionstyle='arc3, rad=-0.2'))
+
+    a = plot.gcf()
+    figfile = StringIO()
+    a.savefig(figfile, format='svg')
+    figfile.seek(0)
+    figdata_svg = '<svg' + figfile.getvalue().split('<svg')[1]
+    a.clf()
+    plot.close(a)
+    del a, b
+    return figdata_svg, valid, xy, figdata_svg_b
 
 
 
