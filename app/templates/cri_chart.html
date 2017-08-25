@@ -55,4 +55,22 @@
     {{ spd[0]|safe }}
 </div>
 {% endif %}
+
+{% if cie1931[1] %}
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[3]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[0]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[4]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:right; display:inline">
+    {{ cie1931[7]|safe }}
+</div>
+<p>x is {{ cie1931[2][0] }}, y is {{ cie1931[2][1] }}</p>
+<p>Ra is {{ cie1931[6] }}, CCT is {{ cie1931[5] }}</p>
+{% endif %}
+
 {% endblock %}
