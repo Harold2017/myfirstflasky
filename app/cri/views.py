@@ -386,10 +386,28 @@ def multiple(args):
     CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
                                        title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
     illuminant = ILLUMINANTS_RELATIVE_SPDS['D50']
+    start, end = 1667, 100000
+    ab = np.array(
+        [UCS_uv_to_xy(CCT_to_uv(a, 'Robertson 1968', D_uv=0))
+         for a in np.arange(start, end + 250, 250)])
+
+    pylab.plot(ab[..., 0], ab[..., 1], color='black', linewidth=2)
+
+    for i in (2500, 3000, 4000, 5000, 6000, 7000):
+        x0, y0 = UCS_uv_to_xy(CCT_to_uv(i, 'Robertson 1968', D_uv=-0.025))
+        x1, y1 = UCS_uv_to_xy(CCT_to_uv(i, 'Robertson 1968', D_uv=0.025))
+        pylab.plot((x0, x1), (y0, y1), color='black', linewidth=2)
+        pylab.annotate(
+            '{0}K'.format(i),
+            xy=(x0, y0),
+            xytext=(0, -i / 250),
+            color='black',
+            textcoords='offset points',
+            size='x-small')
     for s in spd:
         XYZ = spectral_to_XYZ(s, cmfs, illuminant)
         xy = XYZ_to_xy(XYZ)
-        print(xy)
+        #print(xy)
 
         x, y = xy
         pylab.plot(x, y, 'o-', alpha=0.5)
