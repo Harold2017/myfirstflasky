@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block page_content %}
+
+{% if user_file %}
+<div class="page-header">
+    <h1>CRI charts</h1>
+</div>
+<div>
+    <a href="{{ url_for('cri.cri_chart') }}" class="btn btn-default">Check uploaded spectrum</a>
+</div>
+
+<div class="container">
+      <form action="{{ url_for('cri.upload_spectrum') }}" method="post" enctype="multipart/form-data">
+          <label class="btn btn-default btn-file">
+            Choose file<input type="file" class="form-control" name="file" style="display: none"><br />
+          </label>
+          <label class="btn btn-default btn-file">
+            Upload<input type="submit" class="form-control" value="Upload" style="display: none">
+          </label>
+      </form>
+</div>
+
+<div class="page-header">
+    <h3>Colorimetric features of latest uploaded spectrum</h3>
+</div>
+
+{% if table %}
+<div class="container">
+    {{ table }}
+</div>
+{% endif %}
+
+{% if form %}
+<div class="col-md-4" id="foo">
+    {{ wtf.quick_form(form) }}
+</div>
+
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

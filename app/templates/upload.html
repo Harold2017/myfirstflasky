@@ -8,18 +8,11 @@
 <div>
     <a href="{{ url_for('cri.cri_chart') }}" class="btn btn-default">Check uploaded spectrum</a>
 </div>
-<script src="http://oog4yfyu0.bkt.clouddn.com/echarts.min.js"></script>
-<script src="http://oog4yfyu0.bkt.clouddn.com/echarts-gl.js"></script>
 
 <div class="page-header">
-    <h3>Colorimetric features of latest uploaded spectrum</h3>
+    <h3>Colorimetric Diagram</h3>
 </div>
 
-{% if chart %}
-<div class="container">
-    {{ chart|safe }}
-</div>
-{% endif %}
 {% if cie1931[1] %}
 <div class="container" style="width:500px; height:auto; float:left; display:inline">
     {{ cie1931[3]|safe }}
@@ -38,6 +31,7 @@
 </div>
 <p>x is {{ cie1931[2][0] }}, y is {{ cie1931[2][1] }}</p>
 <p>Ra is {{ cie1931[6] }}, CCT is {{ cie1931[5] }}</p>
+<p>Duv is {{ cie1931[9] }}, SDCM is {{ cie1931[10] }}</p>
 
 {% endif %}
 {% endif %}

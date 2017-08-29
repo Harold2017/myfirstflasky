@@ -2,4 +2,4 @@ from flask import Blueprint
 
 cri = Blueprint('cri', __name__)
 
-from .import views
+from .import new_views

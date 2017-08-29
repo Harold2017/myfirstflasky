@@ -1,3 +1,4 @@
+colour
 matplotlib
 aiohttp==2.2.5
 alembic==0.9.3

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div class="container">
+    <a href="{{ url_for('cri.upload') }}" class="btn btn-default">Back</a>
+</div>
+
+<div class="page-header">
+    <h3>Colorimetric Diagram</h3>
+</div>
+
+{% if spd_p %}
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ spd_p|safe }}
+</div>
+{% endif %}
+{% if cie1931_p %}
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931_p|safe }}
+</div>
+{% endif %}
+{% if cri_p %}
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cri_p|safe }}
+</div>
+{% endif %}
+{% if radar_p %}
+<div class="container" style="width:500px; height:auto; float:right; display:inline">
+    {{ radar_p|safe }}
+</div>
+{% endif %}
+{% if sdcm_p %}
+<div class="container" style="width:500px; height:auto; float:right; display:inline">
+    {{ sdcm_p|safe }}
+</div>
+{% endif %}
+{% endblock %}

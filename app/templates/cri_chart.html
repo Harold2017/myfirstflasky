@@ -4,8 +4,7 @@
 <div class="page-header">
     <h1>CRI charts</h1>
 </div>
-<script src="http://oog4yfyu0.bkt.clouddn.com/echarts.min.js"></script>
-<script src="http://oog4yfyu0.bkt.clouddn.com/echarts-gl.js"></script>
+
 {% if form %}
 <div class="col-md-4" id="foo">
     {{ wtf.quick_form(form) }}<br>
@@ -39,15 +38,13 @@
     });
 </script>
 {% endif %}
+
 <div class="container">
     <p></p>
 </div>
-{% if chart %}
-<div class="container">
-    {{ chart|safe }}
-</div>
-{% endif %}
+
 {% if spd[1] %}
+
 <div class="container" style="width:500px; height:auto; float:left; display:inline">
     {{ spd[1]|safe }}
 </div>
@@ -56,24 +53,28 @@
 </div>
 {% endif %}
 
-{% if cie1931[1] %}
-<div class="container" style="width:500px; height:auto; float:left; display:inline">
-    {{ cie1931[3]|safe }}
+{% if cie1931[0] %}
+
+<div class="container">
+    {{ cie1931[5]|safe }}
 </div>
+
 <div class="container" style="width:500px; height:auto; float:left; display:inline">
     {{ cie1931[0]|safe }}
 </div>
 <div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[1]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:left; display:inline">
+    {{ cie1931[2]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:right; display:inline">
+    {{ cie1931[3]|safe }}
+</div>
+<div class="container" style="width:500px; height:auto; float:right; display:inline">
     {{ cie1931[4]|safe }}
 </div>
-<div class="container" style="width:500px; height:auto; float:right; display:inline">
-    {{ cie1931[7]|safe }}
-</div>
-<div class="container" style="width:500px; height:auto; float:right; display:inline">
-    {{ cie1931[8]|safe }}
-</div>
-<p>x is {{ cie1931[2][0] }}, y is {{ cie1931[2][1] }}</p>
-<p>Ra is {{ cie1931[6] }}, CCT is {{ cie1931[5] }}</p>
+
 {% endif %}
 
 {% endblock %}
