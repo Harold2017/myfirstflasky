@@ -55,4 +55,7 @@ def create_app(config_name):
     from .manual import manual as manual_blueprint
     app.register_blueprint(manual_blueprint, url_prefix='/manual')
 
+    from .mqtt import mqtt as mqtt_blueprint
+    app.register_blueprint(mqtt_blueprint, url_prefix='/mqtt')
+
     return app

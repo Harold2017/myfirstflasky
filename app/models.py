@@ -91,6 +91,7 @@ class User(UserMixin, db.Model):
     user_files = db.relationship('User_files', backref='author', lazy='dynamic')
     user_photos = db.relationship('User_photos', backref='author', lazy='dynamic')
     sensors = db.relationship('Sensors', backref='author', lazy='dynamic')
+    #mqtts = db.relationship('mqtt_data', backref='author', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -374,5 +375,20 @@ class Sensor_data(db.Model):
     value = db.Column(db.Integer)
     sensor_id = db.Column(db.Integer, db.ForeignKey('sensors.id'))
 
+
+class mqtt_data(db.Model):
+    __tablename__ = 'mqtt_data'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    topic = db.Column(db.String(64))
+    message = db.Column(db.String(128))
+    #author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __init__(self, topic, message):
+        self.topic = topic
+        self.message = message
+
+    def __repr__(self):
+        return '<mqtt_data %r>' % self.topic + ':' + self.message
 
 
