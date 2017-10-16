@@ -392,3 +392,19 @@ class mqtt_data(db.Model):
         return '<mqtt_data %r>' % self.topic + ':' + self.message
 
 
+class mqtt_gps(db.Model):
+    __tablename__ = 'mqtt_gps'
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(), default=datetime.utcnow)
+    topic = db.Column(db.String(64))
+    message = db.Column(db.String(128))
+    author_id = db.Column(db.Integer)
+
+    def __init__(self, topic, message, author_id):
+        self.topic = topic
+        self.message = message
+        self.author_id = author_id
+
+    def __repr__(self):
+        return '<mqtt_gps %r>' % self.topic + ':' + self.author_id + ',' + self.message
+
