@@ -26,6 +26,8 @@ def mqtt_d():
 def gps(option):
     gps = mqtt_gps.query.filter_by(author_id=option).order_by(mqtt_gps.id.desc()).limit(200).all()
     data = []
+    if len(gps) == 0:
+        return 402
     for i in gps:
         tmp = {"timestamp": i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S')}
         d = json.loads(i.message)

@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import auth
@@ -37,6 +37,18 @@ def login():
             return redirect(request.args.get('next') or url_for('main.index'))
         flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
+
+
+@auth.route('/login/mobile', methods=['POST'])
+def loginMobile():
+    r = request.get_json(force=True)
+    if r is None:
+        return "No Data Posted", 404
+    username = r['username']
+    password = r['password']
+    user = User.query.filter_by(email=username).first()
+    if user is not None and user.verify_password(password):
+        return jsonify({"token": user.api_hash, "code": 200}), 200
 
 
 @auth.route('/logout')
