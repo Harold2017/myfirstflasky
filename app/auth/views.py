@@ -47,8 +47,13 @@ def loginMobile():
     username = r['username']
     password = r['password']
     user = User.query.filter_by(email=username).first()
+    token = user.api_hash
+    sensors = Sensors.query.filter_by(author_id=user.id).order_by(Sensors.id.desc()).all()
+    s = []
+    for sensor in sensors:
+        s.append(sensor.id)
     if user is not None and user.verify_password(password):
-        return jsonify({"token": user.api_hash, "code": 200}), 200
+        return jsonify({"token": token, "sensors": s, "code": 200}), 200
 
 
 @auth.route('/logout')
