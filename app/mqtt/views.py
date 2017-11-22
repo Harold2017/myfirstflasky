@@ -27,12 +27,9 @@ def gps(token, option):
     if token is None:
         return "No Valid Token", 401
     user = User.query.filter_by(api_hash=token).first()
-    if option:
-        gps = []
-        for i in range(1, int(option)+1):
-            gps.append(mqtt_gps.query.filter_by(author_id=user.id, gps_id=i).first())
-    else:
-        gps = mqtt_gps.query.filter_by(author_id=user.id).order_by(mqtt_gps.id.desc()).all()
+    gps = []
+    for i in range(1, int(option)+1):
+        gps.append(mqtt_gps.query.filter_by(author_id=user.id, gps_id=i).first())
     data = []
     if (gps is None) or (len(gps) == 0):
         return 402
@@ -43,4 +40,21 @@ def gps(token, option):
         data.append(dd)
     return jsonify(data), 200
 
+
+@mqtt.route('/gps/<token>/gps_id/<option>', methods=['GET'])
+def gps_1(token, option):
+    if token is None:
+        return "No Valid Token", 401
+    user = User.query.filter_by(api_hash=token).first()
+
+    gps = mqtt_gps.query.filter_by(author_id=user.id, gps_id=option).order_by(mqtt_gps.id.desc()).all()
+    data = []
+    if (gps is None) or (len(gps) == 0):
+        return 402
+    for i in gps:
+        tmp = {"timestamp": i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S')}
+        d = json.loads(i.message)
+        dd = dict(d, **tmp)
+        data.append(dd)
+    return jsonify(data), 200
 
