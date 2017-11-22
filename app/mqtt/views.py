@@ -22,14 +22,19 @@ def mqtt_d():
     return jsonify(data), 200
 
 
-@mqtt.route('/gps/<token>', methods=['GET'])
-def gps(token):
+@mqtt.route('/gps/<token>/<option>', methods=['GET'])
+def gps(token, option):
     if token is None:
         return "No Valid Token", 401
     user = User.query.filter_by(api_hash=token).first()
-    gps = mqtt_gps.query.filter_by(author_id=user.id).order_by(mqtt_gps.id.desc()).limit(200).all()
+    if option:
+        gps = []
+        for i in range(1, int(option)+1):
+            gps.append(mqtt_gps.query.filter_by(author_id=user.id, gps_id=i).first())
+    else:
+        gps = mqtt_gps.query.filter_by(author_id=user.id).order_by(mqtt_gps.id.desc()).all()
     data = []
-    if len(gps) == 0:
+    if (gps is None) or (len(gps) == 0):
         return 402
     for i in gps:
         tmp = {"timestamp": i.timestamp.replace(tzinfo=utc).astimezone(tzchina).strftime('%Y/%m/%d-%H:%M:%S')}
