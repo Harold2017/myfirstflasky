@@ -20,6 +20,10 @@ class Config:
     #UPLOAD_FOLDER = basedir + '/uploads'
     #ALLOWED_EXTENSIONS = set(['csv', 'txt', 'png', 'jpg', 'jpeg'])
     #MAX_CONTENT_LENGTH = 1 * 1024 * 1024
+    RECAPTCHA_PUBLIC_KEY = '6LdIRz8UAAAAAJYJRrZuKDlRQTehaRE9uTcVsO9A'
+    RECAPTCHA_PRIVATE_KEY = '6LdIRz8UAAAAAOjNSx8JsZtZtpdTMRyWelAvYSIY'
+    # RECAPTCHA_PARAMETERS = {'hl': 'zh', 'render': 'explicit'}
+    # RECAPTCHA_DATA_ATTRS = {'theme': 'dark'}
 
     @staticmethod
     def init_app(app):
