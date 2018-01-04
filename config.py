@@ -24,6 +24,7 @@ class Config:
     RECAPTCHA_PRIVATE_KEY = '6LdIRz8UAAAAAOjNSx8JsZtZtpdTMRyWelAvYSIY'
     # RECAPTCHA_PARAMETERS = {'hl': 'zh', 'render': 'explicit'}
     # RECAPTCHA_DATA_ATTRS = {'theme': 'dark'}
+    TESTING = False  # set app['TESTING'] to true for disabling reCaptcha
 
     @staticmethod
     def init_app(app):
