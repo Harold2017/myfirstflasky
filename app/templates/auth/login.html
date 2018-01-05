@@ -7,10 +7,38 @@
 <div class="page-header">
     <h1>Login</h1>
 </div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
+<div>
+    {%if script%}
+        <form class="form form-horizontal" action="{{ url_for('auth.login') }}" method="post" role="form">
+            {{ wtf.form_field(form.email) }}
+            {{ wtf.form_field(form.password) }}
+            {{ wtf.form_field(form.remember_me) }}
+            <div class="l-captcha" data-site-key="d6953c4742725d1dacf8b7a57405ba7c" data-width="100%" data-callback=getResponse></div>
+            {{ wtf.form_field(form.submit) }}
+            {{ form.csrf_token }}
+            <script src="//captcha.luosimao.com/static/dist/api.js"></script>
+            <script>
+                window.onload = initDisable;
+                function initDisable(){
+                    document.getElementById("submit").disabled = true;
+                }
+                function getResponse(resp){
+                    // console.log(resp);  // resp value after confirmation
+                    if (resp){
+                        document.getElementById("submit").disabled = false;
+                    }
+                }
+            </script>
+        </form>
+    {%else%}
+        {{ wtf.quick_form(form) }}
+    {%endif%}
     <br>
     <p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
     <p>New user? <a href="{{ url_for('auth.register') }}">Click here to register</a>.</p>
 </div>
+<!--<div class="page-footer">
+    <p>This product includes GeoLite data created by MaxMind, available from
+        <a href="http://www.maxmind.com">http://www.maxmind.com</a>.</p>
+</div>-->
 {% endblock %}

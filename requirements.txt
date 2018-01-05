@@ -1,3 +1,4 @@
+pygeoip
 colour
 matplotlib
 aiohttp==2.2.5
