@@ -4,8 +4,10 @@ from app import create_app, db
 from app.models import User, Follow, Role, Permission, Post, Comment, Api, Api_gps
 from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
+from werkzeug.contrib.fixers import ProxyFix
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+app.wsgi_app = ProxyFix(app.wsgi_app)
 manager = Manager(app)
 migrate = Migrate(app, db)
 
