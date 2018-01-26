@@ -202,9 +202,14 @@ def SPD(*args):
     if file_path is None:
         flash('No Spectrum is uploaded!')
         return render_template('404.html'), 404
-    with open(file_path) as f:
-        data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
-        f.close()
+    try:
+        with open(file_path, encoding='utf-8') as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
+    except UnicodeDecodeError:
+        with open(file_path, encoding='utf-16') as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
 
     if len(data) is 0:
         flash('No data is uploaded!')
@@ -424,9 +429,14 @@ def multiple(args):
     cmfs = CMFS['CIE 1931 2 Degree Standard Observer']
     spd = []
     for d in args:
-        with open(d) as f:
-            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
-            f.close()
+        try:
+            with open(d, encoding='utf-8') as f:
+                data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+                f.close()
+        except UnicodeDecodeError:
+            with open(d, encoding='utf-16') as f:
+                data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+                f.close()
         w = [i[0] for i in data.values]
         s = [i[1] for i in data.values]
         data_formated = dict(zip(w, s))
@@ -552,9 +562,14 @@ def cie1931_all(*args):
     if file_path is None:
         flash('No Spectrum is uploaded!')
         return render_template('404.html'), 404
-    with open(file_path) as f:
-        data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
-        f.close()
+    try:
+        with open(file_path, encoding='utf-8') as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
+    except UnicodeDecodeError:
+        with open(file_path, encoding='utf-16') as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
 
     w = [i[0] for i in data.values]
     s = [i[1] for i in data.values]
