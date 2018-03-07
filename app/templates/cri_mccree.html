@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block page_content %}
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <script src="http://oog4yfyu0.bkt.clouddn.com/echarts.min.js"></script>
+    <script src="http://oog4yfyu0.bkt.clouddn.com/echarts-gl.js"></script>
+</head>
 <div class="page-header">
     <h1>CRI charts</h1>
 </div>
@@ -8,14 +14,13 @@
 {% if form %}
 <div class="col-md-4" id="foo">
     {{ wtf.quick_form(form) }}<br>
-    <a href="{{ url_for('cri.choose_file') }}" class="btn btn-default">Mccree</a>
     <a href="{{ url_for('cri.upload') }}" class="btn btn-default">Back</a>
 </div>
 
 <script>
     $(document).ready(function() {
         $('#foo').submit(function (e) {
-            var url = "{{ url_for('cri.cri_chart') }}";
+            var url = "{{ url_for('cri.choose_file') }}";
             $.ajax({
                 type: "POST",
                 url: url,
@@ -41,41 +46,15 @@
 {% endif %}
 
 <div class="container">
-    <p></p>
+    <p>Percentage: {{ mccree[1] }}</p>
 </div>
 
-{% if spd[1] %}
 
-<div class="container" style="width:500px; height:auto; float:left; display:inline">
-    {{ spd[1]|safe }}
-</div>
-<div class="container" style="width:500px; height:auto; float:left; display:inline">
-    {{ spd[0]|safe }}
-</div>
-{% endif %}
 
-{% if cie1931[0] %}
-
+{% if mccree %}
 <div class="container">
-    {{ cie1931[5]|safe }}
+    {{ mccree[0] | safe }}
 </div>
-
-<div class="container" style="width:500px; height:auto; float:left; display:inline">
-    {{ cie1931[0]|safe }}
-</div>
-<div class="container" style="width:500px; height:auto; float:left; display:inline">
-    {{ cie1931[1]|safe }}
-</div>
-<div class="container" style="width:500px; height:auto; float:left; display:inline">
-    {{ cie1931[2]|safe }}
-</div>
-<div class="container" style="width:500px; height:auto; float:right; display:inline">
-    {{ cie1931[3]|safe }}
-</div>
-<div class="container" style="width:500px; height:auto; float:right; display:inline">
-    {{ cie1931[4]|safe }}
-</div>
-
 {% endif %}
 
 {% endblock %}

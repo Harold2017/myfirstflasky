@@ -10,9 +10,9 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField, SelectMultipleField
 from pytz import timezone
 
-from colour.plotting import CIE_1931_chromaticity_diagram_plot, single_spd_plot, multi_spd_plot,\
+from colour.plotting import CIE_1931_chromaticity_diagram_plot, single_spd_plot, multi_spd_plot, \
     single_spd_colour_rendering_index_bars_plot
-from colour import CMFS, ILLUMINANTS_RELATIVE_SPDS, SpectralPowerDistribution, spectral_to_XYZ, XYZ_to_xy,\
+from colour import CMFS, ILLUMINANTS_RELATIVE_SPDS, SpectralPowerDistribution, spectral_to_XYZ, XYZ_to_xy, \
     xy_to_CCT, colour_rendering_index, UCS_uv_to_xy, CCT_to_uv, UCS_to_uv, XYZ_to_UCS
 import pandas as pd
 import pylab
@@ -22,7 +22,10 @@ from matplotlib.collections import PolyCollection
 import numpy as np
 from math import sqrt
 from flask_table import Table, Col
+from pyecharts import Line
 
+# from scipy.interpolate import Akima1DInterpolator
+# from scipy import interpolate
 
 tzchina = timezone('Asia/Shanghai')
 utc = timezone('UTC')
@@ -160,6 +163,104 @@ def upload_spectrum():
     else:
         pass
         return render_template('no_file.html', user=current_user)
+
+
+@cri.route('/v1.0/mccree', methods=['GET', 'POST'])
+@login_required
+def choose_file():
+    if User_files.query.filter_by(author_id=current_user.id).first():
+        spectrum = User_files.query.filter_by(author_id=current_user.id).order_by(User_files.id.desc()).all()
+        form = SelectMultipleSpectrumForm(spectrum)
+        mccree_l = 0
+    else:
+        form = 0
+        mccree_l = 0
+    if form.validate_on_submit():
+        spectrum = form.spectra.data
+        if len(spectrum) == 1:
+            mccree_l = mccree(spectrum)
+        else:
+            '''file_path = []
+            for spectra in spectrum:
+                user_file = User_files.query.filter_by(id=spectra).first()
+                file_path.append(user_file.file_path)
+            mccree_l = multiple_mccree(file_path)'''
+            pass
+    spectrum = User_files.query.filter_by(author_id=current_user.id).order_by(User_files.id.desc()).all()
+    form = SelectMultipleSpectrumForm(spectrum)
+    return render_template('cri_mccree.html', form=form, mccree=mccree_l)
+
+
+def mccree(spd):
+    # LARGE_FONT = ("Verdana", 12)
+    # Smooth_Points_Number = 50
+    file = User_files.query.filter_by(id=spd).first()
+    file_path = file.file_path
+    (dirpath, tempfilename) = os.path.split(file_path)
+    (filename, extension) = os.path.splitext(tempfilename)
+    if file_path is None:
+        flash('No Spectrum is uploaded!')
+        return render_template('404.html'), 404
+    try:
+        with open(file_path, encoding='utf-8') as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
+    except UnicodeDecodeError:
+        with open(file_path, encoding='utf-16') as f:
+            data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
+            f.close()
+
+    w = [i[0] for i in data.values]
+    s = [i[1] for i in data.values]
+
+    mccree_data = np.array([[3.25e+02, 0.00e+00],
+                            [3.50e+02, 1.50e-01],
+                            [3.75e+02, 4.00e-01],
+                            [4.00e+02, 6.60e-01],
+                            [4.25e+02, 7.70e-01],
+                            [4.50e+02, 7.50e-01],
+                            [4.75e+02, 6.90e-01],
+                            [5.25e+02, 7.40e-01],
+                            [5.50e+02, 8.80e-01],
+                            [5.90e+02, 1.00e+00],
+                            [6.25e+02, 1.00e+00],
+                            [6.50e+02, 9.40e-01],
+                            [6.75e+02, 9.30e-01],
+                            [7.00e+02, 4.20e-01],
+                            [7.50e+02, 4.00e-02],
+                            [7.75e+02, 0.00e+00]])
+    wavelength = np.array(mccree_data[:, 0])
+    spectrum = np.array(normalize(mccree_data[:, 1]))
+    wl = len(w)
+    wmin = min(w)
+    wmax = max(w)
+    intermin = wmin if wmin < wavelength.min() else wavelength.min()
+    intermax = wmax if wmax > wavelength.max() else wavelength.max()
+    wavelength_smooth = np.linspace(intermin, intermax, wl)
+    # akima = Akima1DInterpolator(wavelength, spectrum)
+    line = Line(title='Mccree Comparision', width=800, height=400)
+    attr = wavelength_smooth
+    d = np.interp(wavelength_smooth, wavelength, spectrum)
+    line.add("Mccree", attr, d, is_smooth=True, is_fill=True, line_opacity=0.2,
+             area_opacity=0.4, symbol=True, is_datazoom_show=True)
+    line.add(filename, attr, s, is_smooth=True, is_fill=True, line_opacity=0.2,
+             area_opacity=0.4, symbol=True, is_datazoom_show=True)
+    chart = line.render_embed()
+    area_under_mccree = np.trapz(d, attr)
+    area_under_tmp = np.trapz(w, s)
+    percentage = str(abs(round(area_under_tmp / area_under_mccree * 100, 2))) + ' %'
+    return render_template('sensor_render_pyecharts.html', chart=chart), percentage
+
+
+def multiple_mccree(file_path):
+    pass
+
+
+def normalize(v):
+    norm = v.max()
+    if norm == 0:
+        return v
+    return v / norm
 
 
 @cri.route('/v1.0/chart', methods=['GET', 'POST'])
@@ -716,6 +817,5 @@ def cie1931_all(*args):
 
     del a, b, c, d, e
     table = parameters_table(spd)
-    return figdata_svg, figdata_svg_b, figdata_svg_c,\
+    return figdata_svg, figdata_svg_b, figdata_svg_c, \
            figdata_svg_d, figdata_svg_e, table
-
