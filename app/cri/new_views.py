@@ -538,8 +538,8 @@ def multiple(args):
             with open(d, encoding='utf-16') as f:
                 data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
                 f.close()
-        w = [i[0] for i in data.values]
-        s = [i[1] for i in data.values]
+        w = [float(i[0].split()[0]) if isinstance(i[0], str) else i[0] for i in data.values.tolist()]
+        s = [float(i[0].split()[1]) if isinstance(i[0], str) else i[1] for i in data.values.tolist()]
         data_formated = dict(zip(w, s))
         spd.append(SpectralPowerDistribution('Sample', data_formated))
     b = multi_spd_plot(spd, standalone=False, figure_size=(5, 5), title='Spectrum')
