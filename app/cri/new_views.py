@@ -318,8 +318,8 @@ def SPD(*args):
         valid = 0
     else:
         valid = 1
-        w = [i[0] for i in data.values]
-        s = [i[1] for i in data.values]
+        w = [float(i[0].split()[0]) if isinstance(i[0], str) else i[0] for i in data.values.tolist()]
+        s = [float(i[0].split()[1]) if isinstance(i[0], str) else i[1] for i in data.values.tolist()]
         data_formated = dict(zip(w, s))
         spd = SpectralPowerDistribution('Sample', data_formated)
     return spd, valid
@@ -672,8 +672,8 @@ def cie1931_all(*args):
             data = pd.read_csv(f, sep="\t" or ' ' or ',', header=None)
             f.close()
 
-    w = [i[0] for i in data.values]
-    s = [i[1] for i in data.values]
+    w = [float(i[0].split()[0]) if isinstance(i[0], str) else i[0] for i in data.values.tolist()]
+    s = [float(i[0].split()[1]) if isinstance(i[0], str) else i[1] for i in data.values.tolist()]
     data_formated = dict(zip(w, s))
     spd = SpectralPowerDistribution('Sample', data_formated)
     b = single_spd_plot(spd, standalone=False, figure_size=(5, 5), title='Spectrum')
