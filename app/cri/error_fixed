@@ -1,0 +1,18 @@
+_tkinter.TclError: no display name and no $DISPLAY environment variable
+
+Solve:
+1. add
+    import matplotlib
+    matplotlib.use('Agg')
+  before
+    from matplotlib import pyplot
+2. change matplotlibrc
+    find this file path by:
+      enter in virtual env's python shell
+      import matplotlib
+      matplotlib.matplotlib_fname()
+    change backend
+      backend : Agg
+3. save fig after plt.draw() or plt.show()
+    plt.show()
+    plt.savefig(...)
