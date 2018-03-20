@@ -16,3 +16,13 @@ Solve:
 3. save fig after plt.draw() or plt.show()
     plt.show()
     plt.savefig(...)
+    
+    
+    
+'nan' assertion error:
+it is caused by empty lines in uploaded spectrum files (pd.read_csv() read them in as string instead of number)
+i forced tranfering the string into float by: [float(i[0].split()[0]) if isinstance(i[0], str) else i[0] for i in data.values.tolist()]
+
+Solve:
+1. upload file without empty line
+2. use isnan() to pick out empty lines and remove them
