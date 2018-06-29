@@ -58,4 +58,7 @@ def create_app(config_name):
     from .mqtt import mqtt as mqtt_blueprint
     app.register_blueprint(mqtt_blueprint, url_prefix='/mqtt')
 
+    from .colour_science import colour_science as colour_science_blueprint
+    app.register_blueprint(colour_science_blueprint, url_prefix='/colour_science')
+
     return app

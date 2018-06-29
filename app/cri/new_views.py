@@ -10,7 +10,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField, SelectMultipleField
 from pytz import timezone
 
-from colour.plotting import CIE_1931_chromaticity_diagram_plot, single_spd_plot, multi_spd_plot, \
+from colour.plotting import chromaticity_diagram_plot_CIE1931, single_spd_plot, multi_spd_plot, \
     single_spd_colour_rendering_index_bars_plot
 from colour import CMFS, ILLUMINANTS_RELATIVE_SPDS, SpectralPowerDistribution, spectral_to_XYZ, XYZ_to_xy, \
     xy_to_CCT, colour_rendering_index, UCS_uv_to_xy, CCT_to_uv, UCS_to_uv, XYZ_to_UCS
@@ -386,8 +386,8 @@ def spd_plot(spd):
 
 
 def cie1931(xy):
-    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
-                                       title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
+    chromaticity_diagram_plot_CIE1931(standalone=False, figure_size=(5, 5), grid=False,
+                                      title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
     start, end = 1667, 100000
     mn = np.array(
         [UCS_uv_to_xy(CCT_to_uv(m, 'Robertson 1968', D_uv=0))
@@ -426,9 +426,9 @@ def cie1931(xy):
 
 
 def sdcm_plot(xy):
-    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
-                                       title='C78.377-2008, Tolerance Quadrangle',
-                                       bounding_box=(0.25, 0.5, 0.25, 0.45))
+    chromaticity_diagram_plot_CIE1931(standalone=False, figure_size=(5, 5), grid=False,
+                                      title='C78.377-2008, Tolerance Quadrangle',
+                                      bounding_box=(0.25, 0.5, 0.25, 0.45))
 
     start, end = 1667, 100000
     ab = np.array(
@@ -550,8 +550,8 @@ def multiple(args):
     b.clf()
     plot.close(b)
 
-    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
-                                       title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
+    chromaticity_diagram_plot_CIE1931(standalone=False, figure_size=(5, 5), grid=False,
+                                      title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
     illuminant = ILLUMINANTS_RELATIVE_SPDS['D50']
     start, end = 1667, 100000
     ab = np.array(
@@ -687,8 +687,8 @@ def cie1931_all(*args):
     XYZ = spectral_to_XYZ(spd, cmfs, illuminant)
     xy = XYZ_to_xy(XYZ)
 
-    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
-                                       title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
+    chromaticity_diagram_plot_CIE1931(standalone=False, figure_size=(5, 5), grid=False,
+                                      title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
     start, end = 1667, 100000
     mn = np.array(
         [UCS_uv_to_xy(CCT_to_uv(m, 'Robertson 1968', D_uv=0))
@@ -762,9 +762,9 @@ def cie1931_all(*args):
     d.clf()
     pylab.close(d)
 
-    CIE_1931_chromaticity_diagram_plot(standalone=False, figure_size=(5, 5), grid=False,
-                                       title='C78.377-2008, Tolerance Quadrangle',
-                                       bounding_box=(0.25, 0.5, 0.25, 0.45))
+    chromaticity_diagram_plot_CIE1931(standalone=False, figure_size=(5, 5), grid=False,
+                                      title='C78.377-2008, Tolerance Quadrangle',
+                                      bounding_box=(0.25, 0.5, 0.25, 0.45))
 
     start, end = 1667, 100000
     ab = np.array(
