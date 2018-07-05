@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block page_content %}
+
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css">
+
+<div class="page-header">
+    <h1>Lab charts</h1>
+</div>
+
+<table id="table_Lab" class="table table-striped table-bordered" style="width:100%">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>L</th>
+            <th>a</th>
+            <th>b</th>
+        </tr>
+    </thead>
+    <tbody>
+       <tr>
+           <td><input id="row-1-No" value="1" type="text"></td>
+           <td><input id="row-1-L" value="" type="text"></td>
+           <td><input id="row-1-a" value="" type="text"></td>
+           <td><input id="row-1-b" value="" type="text"></td>
+       </tr>
+    </tbody>
+</table>
+<br/>
+<input id="addRow" type="submit" value="Add new row" class="btn btn-default"/>&nbsp;&nbsp;
+<input id="uploadData" type="submit" value="Upload" class="btn btn-default"/>&nbsp;&nbsp;
+<br/>
+
+<script>
+    var table = $("#table_Lab").DataTable();
+    var counter = 2;
+    $('#addRow').on('click', function(){
+        var td_No = '<input id="row-' + counter + '-No" value=' + counter + ' type="text">';
+        var td_L = '<input id="row-' + counter + '-L" value="" type="text">';
+        var td_a = '<input id="row-' + counter + '-a" value="" type="text">';
+        var td_b = '<input id="row-' + counter + '-b" value="" type="text">';
+
+        table.row.add([
+            td_No,
+            td_L,
+            td_a,
+            td_b]).draw(false);
+        counter++;
+    });
+
+
+    $('#uploadData').on('click', function(){
+        var data = $('input[type="text"]').map(function(){
+            return this.value;
+        }).get();
+        // alert(data);
+        $.ajax({
+            url: "{{ url_for('colour_science.lab_plot') }}",
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            //dataType:"json",
+            success: function(response){
+                // document.write(response);
+                var myDiv = $('#result');
+                myDiv.html(response);}
+        });
+    });
+</script>
+
+<div id='result' class="container">
+    {{ result }}
+</div>
+
+
+{% endblock %}
