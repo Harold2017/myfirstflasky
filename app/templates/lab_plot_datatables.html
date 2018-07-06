@@ -55,7 +55,8 @@
         var data = $('input[type="text"]').map(function(){
             return this.value;
         }).get();
-        // alert(data);
+        // alert("Your data has been uploaded, please wait for several seconds for processing it.");
+        message("Your data has been uploaded, please wait for several seconds for processing it.");
         $.ajax({
             url: "{{ url_for('colour_science.lab_plot') }}",
             type: "POST",
@@ -68,6 +69,26 @@
                 myDiv.html(response);}
         });
     });
+
+    function message(msg){
+    if (window.webkitNotifications) {
+        if (window.webkitNotifications.checkPermission() == 0) {
+        notification = window.webkitNotifications.createNotification(
+          'picture.png', 'Title', msg);
+                    notification.onshow = function() { // when message shows up
+                        setTimeout(function() {
+                            notification.close();
+                        }, 1000); // close message after one second...
+                    };
+        notification.show();
+      } else {
+        window.webkitNotifications.requestPermission(); // ask for permissions
+      }
+    }
+    else {
+        alert(msg);// fallback for people who does not have notification API; show alert box instead
+    }
+    };
 </script>
 
 <div id='result' class="container">

@@ -31,8 +31,6 @@ def lab_plot():
 
 @colour_science.route('/Lab', methods=['GET', 'POST'])
 def lab_plot():
-    cie_1931 = None
-    swatchcolor = None
     if request.method == 'POST':
         data = request.get_json()
         data = [int(i) for i in data]
@@ -48,15 +46,20 @@ def lab_plot():
 def cie1931(Lab_list):
     chromaticity_diagram_plot_CIE1931(standalone=False, figure_size=(5, 5), grid=False,
                                       title='CIE 1931 Chromaticity Diagram', bounding_box=(-0.1, 0.9, -0.05, 0.95))
+    cnt = 1
     for Lab in Lab_list:
         xy = colour.XYZ_to_xy(colour.Lab_to_XYZ(np.array(Lab)))
         x, y = xy
-        pylab.plot(x, y, 'o', markersize=7, markeredgewidth=1, markerfacecolor="None", markeredgecolor='black')
+        pylab.plot(x, y, 'o', markersize=5, markeredgewidth=1, markerfacecolor="None", markeredgecolor='black')
+        '''
         pylab.annotate((("%.4f" % x), ("%.4f" % y)),
                        xy=xy,
                        xytext=(-50, 30),
                        textcoords='offset points',
                        arrowprops=dict(arrowstyle='->', connectionstyle='arc3, rad=-0.2'))
+        '''
+        pylab.text(x, y, str(cnt), fontsize=10)
+        cnt = cnt + 1
 
     a = pylab.gcf()
     figfile = StringIO()
