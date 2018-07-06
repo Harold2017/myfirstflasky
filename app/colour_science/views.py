@@ -33,7 +33,7 @@ def lab_plot():
 def lab_plot():
     if request.method == 'POST':
         data = request.get_json()
-        data = [int(i) for i in data]
+        data = [float(i) for i in data]
         Lab_list = [data[i + 1:i + 4] for i in range(0, len(data), 4)]
         cie_1931 = cie1931(Lab_list)
         swatchcolor = swatch_color(Lab_list)
