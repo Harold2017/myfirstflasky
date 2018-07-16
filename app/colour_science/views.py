@@ -76,7 +76,7 @@ def swatch_color(Lab_list):
     swatches = []
     counter = 1
     for Lab in Lab_list:
-        RGB = colour.XYZ_to_sRGB(colour.Lab_to_XYZ(np.array(Lab)))
+        RGB = abs(colour.XYZ_to_sRGB(colour.Lab_to_XYZ(np.array(Lab))))
         title = 'sample_' + str(counter)
         swatches.append(ColourSwatch(title, RGB))
         counter = counter + 1
