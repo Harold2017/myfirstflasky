@@ -7,7 +7,6 @@ import colour
 from colour.plotting import chromaticity_diagram_plot_CIE1931, multi_colour_swatches_plot, ColourSwatch
 from .forms import LabForm
 
-
 '''
 @colour_science.route('/Lab', methods=['GET', 'POST'])
 def lab_plot():
@@ -77,6 +76,18 @@ def swatch_color(Lab_list):
     counter = 1
     for Lab in Lab_list:
         RGB = abs(colour.XYZ_to_sRGB(colour.Lab_to_XYZ(np.array(Lab))))
+        '''
+        # RGB shows a wrong color? sRGB is correct
+        illuminant_XYZ = np.array([0.34570, 0.35850])
+        illuminant_RGB = np.array([0.31270, 0.32900])
+        XYZ_to_RGB_matrix = np.array(
+            [[3.24062548, -1.53720797, -0.49862860],
+             [-0.96893071, 1.87575606, 0.04151752],
+             [0.05571012, -0.20402105, 1.05699594]]
+        )
+        # chromatic_adaptation_transform = 'Bradford'
+        RGB = colour.XYZ_to_RGB(colour.Lab_to_XYZ(np.array(Lab)), illuminant_XYZ, illuminant_RGB, XYZ_to_RGB_matrix)
+        '''
         title = 'sample_' + str(counter)
         swatches.append(ColourSwatch(title, RGB))
         counter = counter + 1
