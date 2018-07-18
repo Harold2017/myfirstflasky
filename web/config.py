@@ -25,6 +25,9 @@ class Config:
     # RECAPTCHA_PARAMETERS = {'hl': 'zh', 'render': 'explicit'}
     # RECAPTCHA_DATA_ATTRS = {'theme': 'dark'}
     TESTING = False  # set app['TESTING'] to true for disabling reCaptcha
+    MYSQL_USER = "flasky"
+    MYSQL_PASSWORD = "123456"
+    MYSQL_DB = "flasky"
 
     @staticmethod
     def init_app(app):
